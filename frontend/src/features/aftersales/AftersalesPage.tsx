@@ -1,3 +1,4 @@
+import { ArrowChain } from '../../components/ui/Chain';
 import { Badge, DataValue } from '../../components/ui/DataValue';
 import { Icon, type IconName } from '../../components/ui/Icon';
 import { PageHero, SectionCard } from '../../components/ui/SectionCard';
@@ -10,18 +11,17 @@ import {
 } from '../../content/aftersales';
 import { useField, useSection } from '../../hooks/useContent';
 
-const FLOW_ICONS: IconName[] = ['car', 'chart', 'gear'];
-const GROUPS: { key: keyof typeof aftersalesGroups; title: string; sub: string; icon: IconName; icons: IconName[] }[] = [
-  { key: 'recognize', title: 'Erkennen', sub: 'Zustand, Nutzung und Risiken frühzeitig verstehen.', icon: 'pulse', icons: ['pulse', 'battery', 'search', 'chart', 'shield'] },
-  { key: 'act', title: 'Handeln', sub: 'Service, Ersatzteile und Sicherheit effizient umsetzen.', icon: 'wrench', icons: ['box', 'link', 'doc', 'shield', 'clock'] },
-  { key: 'improve', title: 'Weiterentwickeln', sub: 'Erkenntnisse in zukünftige Wertschöpfung integrieren.', icon: 'chart', icons: ['gear', 'recycle', 'chart', 'leaf'] },
+const GROUPS: { key: keyof typeof aftersalesGroups; title: string; sub: string; icon: IconName }[] = [
+  { key: 'recognize', title: 'Erkennen', sub: 'Zustand, Nutzung und Risiken frühzeitig verstehen.', icon: 'pulse' },
+  { key: 'act', title: 'Handeln', sub: 'Service, Ersatzteile und Sicherheit effizient umsetzen.', icon: 'wrench' },
+  { key: 'improve', title: 'Weiterentwickeln', sub: 'Erkenntnisse in zukünftige Wertschöpfung integrieren.', icon: 'chart' },
 ];
 
-function FlowNode({ id, icon }: { id: string; icon: IconName }) {
+function FlowNode({ id }: { id: string }) {
   const s = useSection(id);
   return (
     <SectionCard id={id} className="flow-node">
-      <span className="chain__icon"><Icon name={icon} size={22} /></span>
+      <span className="chain__icon"><Icon name={s.icon ?? 'box'} size={22} /></span>
       <span>
         <strong>{s.title}</strong>
         <span className="muted small flow-node__sub"><DataValue fieldKey={`${id}.sub`} /></span>
@@ -59,14 +59,9 @@ export function AftersalesPage() {
             Ein Kreislauf aus Beobachten, Auswerten und Verbessern: Was im Betrieb auffällt, wird analysiert und fließt als
             Änderung in die nächste Produktrevision. Der Digitale Produktpass verknüpft alle Schritte mit demselben Produkt.
           </p>
-          <div className="flow">
-            {aftersalesFlowIds.map((id, i) => (
-              <div className="chain__step" key={id}>
-                <FlowNode id={id} icon={FLOW_ICONS[i]} />
-                {i < aftersalesFlowIds.length - 1 ? <span className="chain__arrow"><Icon name="arrow" size={18} /></span> : null}
-              </div>
-            ))}
-          </div>
+          <ArrowChain ids={aftersalesFlowIds} className="flow">
+            {(id) => <FlowNode id={id} />}
+          </ArrowChain>
         </div>
 
         <SectionCard id="aftersales.featured" stretch={false}>
@@ -98,8 +93,8 @@ export function AftersalesPage() {
               </div>
             </div>
             <div className="stack">
-              {aftersalesGroups[g.key].map((id, i) => (
-                <Tile key={id} id={id} icon={g.icons[i]} fieldKey={`${id}.sub`} />
+              {aftersalesGroups[g.key].map((id) => (
+                <Tile key={id} id={id} fieldKey={`${id}.sub`} />
               ))}
             </div>
           </div>

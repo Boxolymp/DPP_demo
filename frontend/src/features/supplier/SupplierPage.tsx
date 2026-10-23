@@ -1,7 +1,7 @@
 import { useDrawer } from '../../app/providers/DrawerProvider';
 import { BarChart } from '../../components/charts/BarChart';
+import { ArrowChain, ChainNode } from '../../components/ui/Chain';
 import { Badge, DataValue, FieldBadge } from '../../components/ui/DataValue';
-import { Icon, type IconName } from '../../components/ui/Icon';
 import { FieldMetric, PageHero, SectionCard, SectionTitle } from '../../components/ui/SectionCard';
 import { FieldList, Tile } from '../../components/ui/Tile';
 import {
@@ -12,18 +12,6 @@ import {
 } from '../../content/supplier';
 import { useField, useSection } from '../../hooks/useContent';
 
-const CHAIN_ICONS: IconName[] = ['box', 'factory', 'shield', 'truck', 'box'];
-
-function ChainNode({ id, icon }: { id: string; icon: IconName }) {
-  const s = useSection(id);
-  return (
-    <SectionCard id={id} className="chain__node">
-      <span className="chain__icon"><Icon name={icon} size={22} /></span>
-      <span className="chain__label">{s.title}</span>
-    </SectionCard>
-  );
-}
-
 function ComplianceCard({ id }: { id: string }) {
   const s = useSection(id);
   const cov = useField(`${id}.coverage`);
@@ -31,10 +19,10 @@ function ComplianceCard({ id }: { id: string }) {
   return (
     <SectionCard id={id} className="compliance">
       <div className="compliance__head">
-        <strong>{s.title.split(':')[0]}</strong>
+        <strong>{s.title}</strong>
         <FieldBadge fieldKey={`${id}.status`} />
       </div>
-      <p className="muted small">{s.title.split(':')[1]?.trim()}</p>
+      <p className="muted small">{s.subtitle}</p>
       <div className="progress" aria-hidden="true">
         <span className={`progress__fill progress__fill--${cov.tone ?? 'neutral'}`} style={{ width: `${pct}%` }} />
       </div>
@@ -89,14 +77,9 @@ export function SupplierPage() {
           <div className="neighbor" aria-hidden="true">Rohstofflieferanten</div>
           <div className="responsibility">
             <Badge tone="ok">Mein Verantwortungsbereich (Zulieferer)</Badge>
-            <div className="chain chain--linear">
-              {supplierChainIds.map((id, i) => (
-                <div className="chain__step" key={id}>
-                  <ChainNode id={id} icon={CHAIN_ICONS[i]} />
-                  {i < supplierChainIds.length - 1 ? <span className="chain__arrow"><Icon name="arrow" size={18} /></span> : null}
-                </div>
-              ))}
-            </div>
+            <ArrowChain ids={supplierChainIds} className="chain chain--linear">
+              {(id) => <ChainNode id={id} />}
+            </ArrowChain>
           </div>
           <div className="neighbor" aria-hidden="true">OEM Integration</div>
         </div>
@@ -154,15 +137,18 @@ export function SupplierPage() {
               <ShipmentStep key={id} id={id} />
             ))}
           </div>
-          <Tile id="supplier.shipment.info" icon="truck" fieldKey="supplier.shipment.id" />
+          <Tile id="supplier.shipment.info" fieldKey="supplier.shipment.id" />
         </div>
 
         <SectionCard id="supplier.impact" stretch={false}>
           <SectionTitle sub="t CO₂e">Impact meines Beitrags</SectionTitle>
           <BarChart
-            fieldKeys={['supplier.impact.material', 'supplier.impact.production', 'supplier.impact.transport']}
-            labels={['Material', 'Fertigung', 'Transport']}
             max={30}
+            bars={[
+              { fieldKey: 'supplier.impact.material', label: 'Material' },
+              { fieldKey: 'supplier.impact.production', label: 'Fertigung' },
+              { fieldKey: 'supplier.impact.transport', label: 'Transport' },
+            ]}
           />
           <FieldMetric fieldKey="supplier.impact.delta" className="metric--accent" />
         </SectionCard>

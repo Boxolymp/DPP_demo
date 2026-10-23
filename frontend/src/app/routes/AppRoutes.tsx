@@ -1,13 +1,31 @@
-import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense, type ComponentType } from 'react';
+import { Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { PRODUCT_GROUPS } from '../../content/showroom';
+import { PAGES, type PageId } from '../../lib/pages';
 import { AppShell } from '../shell/AppShell';
 
-const ShowroomPage = lazy(() => import('../../features/showroom/ShowroomPage').then((m) => ({ default: m.ShowroomPage })));
-const OemPage = lazy(() => import('../../features/oem/OemPage').then((m) => ({ default: m.OemPage })));
-const CustomerPage = lazy(() => import('../../features/customer/CustomerPage').then((m) => ({ default: m.CustomerPage })));
-const SupplierPage = lazy(() => import('../../features/supplier/SupplierPage').then((m) => ({ default: m.SupplierPage })));
-const FootprintPage = lazy(() => import('../../features/footprint/FootprintPage').then((m) => ({ default: m.FootprintPage })));
-const AftersalesPage = lazy(() => import('../../features/aftersales/AftersalesPage').then((m) => ({ default: m.AftersalesPage })));
+function lazyPage<K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) {
+  return lazy(() => load().then((m) => ({ default: m[name] })));
+}
+
+const ShowroomPage = lazyPage(() => import('../../features/showroom/ShowroomPage'), 'ShowroomPage');
+
+/** Je Fachseite genau eine Komponente; eine neue Seite in `PAGES` ohne Eintrag hier ist ein Typfehler. */
+const PAGE_COMPONENTS: Record<PageId, ComponentType> = {
+  oem: lazyPage(() => import('../../features/oem/OemPage'), 'OemPage'),
+  customer: lazyPage(() => import('../../features/customer/CustomerPage'), 'CustomerPage'),
+  supplier: lazyPage(() => import('../../features/supplier/SupplierPage'), 'SupplierPage'),
+  footprint: lazyPage(() => import('../../features/footprint/FootprintPage'), 'FootprintPage'),
+  aftersales: lazyPage(() => import('../../features/aftersales/AftersalesPage'), 'AftersalesPage'),
+};
+
+const PRODUCT_IDS = PRODUCT_GROUPS.flatMap((g) => (g.productId ? [g.productId] : []));
+
+function ProductShell() {
+  const { productId = '' } = useParams();
+  if (!PRODUCT_IDS.includes(productId)) return <Navigate to="/" replace />;
+  return <AppShell variant="product" />;
+}
 
 export function AppRoutes() {
   return (
@@ -16,13 +34,12 @@ export function AppRoutes() {
         <Route element={<AppShell variant="showroom" />}>
           <Route path="/" element={<ShowroomPage />} />
         </Route>
-        <Route path="/products/:productId" element={<AppShell variant="product" />}>
-          <Route index element={<Navigate to="oem" replace />} />
-          <Route path="oem" element={<OemPage />} />
-          <Route path="customer" element={<CustomerPage />} />
-          <Route path="supplier" element={<SupplierPage />} />
-          <Route path="footprint" element={<FootprintPage />} />
-          <Route path="aftersales" element={<AftersalesPage />} />
+        <Route path="/products/:productId" element={<ProductShell />}>
+          <Route index element={<Navigate to={PAGES[0].id} replace />} />
+          {PAGES.map(({ id }) => {
+            const Page = PAGE_COMPONENTS[id];
+            return <Route key={id} path={id} element={<Page />} />;
+          })}
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

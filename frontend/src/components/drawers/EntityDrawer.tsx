@@ -1,21 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useDrawer } from '../../app/providers/DrawerProvider';
-import { fieldRegistry } from '../../content';
-import { useField, useProductId, useSection } from '../../hooks/useContent';
-import { resolvePath } from '../../lib/paths';
+import { useField, useFields, useProductId, useSection } from '../../hooks/useContent';
+import { productPath } from '../../lib/pages';
 import type { DataField, RelatedLink } from '../../types/content';
-import { Badge, formatValue, STATUS_LABEL } from '../ui/DataValue';
+import { Badge, formatValue, STATUS_LABEL, STATUS_TONE } from '../ui/DataValue';
 import { Icon } from '../ui/Icon';
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 function FieldRow({ f }: { f: DataField }) {
   return (
     <li className="drawer__field">
       <div className="drawer__field-head">
         <span className="drawer__field-label">{f.label}</span>
-        <Badge tone={f.status === 'unavailable' ? 'open' : f.status === 'live' ? 'ok' : 'neutral'}>
-          {STATUS_LABEL[f.status]}
-        </Badge>
+        <Badge tone={STATUS_TONE[f.status]}>{STATUS_LABEL[f.status]}</Badge>
       </div>
       <div className="drawer__field-value">{formatValue(f)}</div>
       <dl className="drawer__meta">
@@ -37,10 +36,10 @@ function FieldRow({ f }: { f: DataField }) {
 
 function SectionBody({ id }: { id: string }) {
   const s = useSection(id);
-  const fields = s.fieldKeys.map((k) => fieldRegistry.get(k)).filter((f): f is DataField => Boolean(f));
+  const fields = useFields(s.fieldKeys);
   return (
     <>
-      <h2 id="drawer-title">{s.title}</h2>
+      <h2 id="drawer-title">{s.subtitle ? `${s.title}: ${s.subtitle}` : s.title}</h2>
       <p className="drawer__summary">{s.summary}</p>
       {fields.length > 0 ? (
         <>
@@ -79,8 +78,8 @@ function Related({ links }: { links: RelatedLink[] }) {
       <h3>Verwandte Ansichten</h3>
       <ul className="drawer__links">
         {links.map((l) => (
-          <li key={l.to + l.label}>
-            <Link to={resolvePath(l.to, productId)} onClick={close}>
+          <li key={l.page + l.label}>
+            <Link to={productPath(productId, l.page)} onClick={close}>
               {l.label} <Icon name="arrow" size={16} />
             </Link>
           </li>
@@ -92,29 +91,51 @@ function Related({ links }: { links: RelatedLink[] }) {
 
 export function EntityDrawer() {
   const { target, close } = useDrawer();
+  const panelRef = useRef<HTMLElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const returnFocus = useRef<HTMLElement | null>(null);
+  const open = target !== null;
 
+  // Hängt nur am Öffnen/Schließen, damit ein Wechsel des Ziels den Rückgabefokus nicht überschreibt.
   useEffect(() => {
-    if (!target) return;
-    returnFocus.current = document.activeElement as HTMLElement | null;
+    if (!open) return;
+    const returnFocus = document.activeElement as HTMLElement | null;
+    const scrollBefore = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     closeRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape') {
+        close();
+        return;
+      }
+      if (e.key !== 'Tab' || !panelRef.current) return;
+      const items = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !panelRef.current.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !panelRef.current.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => {
       document.removeEventListener('keydown', onKey);
-      returnFocus.current?.focus?.();
+      document.body.style.overflow = scrollBefore;
+      returnFocus?.focus?.();
     };
-  }, [target, close]);
+  }, [open, close]);
 
   if (!target) return null;
 
   return (
     <div className="drawer-root">
       <div className="drawer-backdrop" onClick={close} />
-      <aside className="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <aside ref={panelRef} className="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
         <div className="drawer__top">
           <span className="drawer__kicker">Details</span>
           <button ref={closeRef} type="button" className="icon-btn" onClick={close} aria-label="Schließen">

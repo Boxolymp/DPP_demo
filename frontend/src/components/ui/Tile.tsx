@@ -6,7 +6,8 @@ import { SectionCard } from './SectionCard';
 
 interface TileProps {
   id: string;
-  icon: IconName;
+  /** Überschreibt das Icon der Sektion. */
+  icon?: IconName;
   /** Optionales Feld, dessen Wert als Untertitel erscheint. */
   fieldKey?: string;
   className?: string;
@@ -18,7 +19,7 @@ export function Tile({ id, icon, fieldKey, className = '' }: TileProps) {
   return (
     <SectionCard id={id} className={`tile ${className}`}>
       <span className="tile__icon">
-        <Icon name={icon} />
+        <Icon name={icon ?? s.icon ?? 'box'} />
       </span>
       <span className="tile__body">
         <span className="tile__title">{s.title}</span>

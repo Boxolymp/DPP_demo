@@ -1,25 +1,28 @@
-import { createContent, fld, link, PAGES } from './builder';
+import type { IconName } from '../components/ui/Icon';
+import type { Tone } from '../types/content';
+import { createContent, fld, link } from './builder';
 
 const c = createContent();
 
-const chain: [string, string, string][] = [
-  ['incoming', 'Materialeingang', 'Eingang der Rohmaterialien beim Zulieferer. Chargen und Herkunft werden hier erfasst.'],
-  ['production', 'Fertigung', 'Herstellung des gelieferten Materials oder Bauteils. Energie- und Prozessdaten fließen in die Emissionsallokation.'],
-  ['quality', 'Qualitätsprüfung', 'Prüfungen und Zertifikate. Nachweise werden mit Charge und Gültigkeit verknüpft.'],
-  ['transport', 'Transport', 'Beförderung zum OEM. Sendungsmasse, Strecke und Verkehrsträger bestimmen die Transportemissionen.'],
-  ['handover', 'Übergabe an OEM', 'Übergabe der Lieferung. Ab hier gehört das Material zur OEM-Stückliste.'],
+interface ChainRow { id: string; title: string; icon: IconName; summary: string }
+const chain: ChainRow[] = [
+  { id: 'incoming', title: 'Materialeingang', icon: 'box', summary: 'Eingang der Rohmaterialien beim Zulieferer. Chargen und Herkunft werden hier erfasst.' },
+  { id: 'production', title: 'Fertigung', icon: 'factory', summary: 'Herstellung des gelieferten Materials oder Bauteils. Energie- und Prozessdaten fließen in die Emissionsallokation.' },
+  { id: 'quality', title: 'Qualitätsprüfung', icon: 'shield', summary: 'Prüfungen und Zertifikate. Nachweise werden mit Charge und Gültigkeit verknüpft.' },
+  { id: 'transport', title: 'Transport', icon: 'truck', summary: 'Beförderung zum OEM. Sendungsmasse, Strecke und Verkehrsträger bestimmen die Transportemissionen.' },
+  { id: 'handover', title: 'Übergabe an OEM', icon: 'box', summary: 'Übergabe der Lieferung. Ab hier gehört das Material zur OEM-Stückliste.' },
 ];
-for (const [id, title, summary] of chain) {
-  c.add(`supplier.chain.${id}`, title, summary, [
-    fld(`supplier.chain.${id}.facility`, 'Werk / Standort', undefined, { src: 'ERP / SCM' }),
-  ]);
-}
+export const supplierChainIds = c.group('supplier.chain', chain, (r, id) => ({
+  title: r.title,
+  icon: r.icon,
+  summary: r.summary,
+  fields: [fld(`${id}.facility`, 'Werk / Standort', undefined, { src: 'ERP / SCM' })],
+}));
 
-c.add(
-  'supplier.contribution',
-  'Mein Produktbeitrag: Kathodenmaterial NMC622',
-  'Der Beitrag des Zulieferers ist über die Stückliste (BOM) mit dem OEM-Produkt verknüpft. Dieselbe Beziehung nutzt der OEM, daher ändert sich ein Wert nur an einer Stelle.',
-  [
+c.add('supplier.contribution', {
+  title: 'Mein Produktbeitrag: Kathodenmaterial NMC622',
+  summary: 'Der Beitrag des Zulieferers ist über die Stückliste (BOM) mit dem OEM-Produkt verknüpft. Dieselbe Beziehung nutzt der OEM, daher ändert sich ein Wert nur an einer Stelle.',
+  fields: [
     fld('supplier.material.name', 'Material', 'Kathodenmaterial NMC622', { src: 'PLM / Lieferant' }),
     fld('supplier.material.type', 'Materialtyp', 'Kathodenmaterial (NMC622)', { src: 'PLM / Lieferant' }),
     fld('supplier.material.form', 'Lieferform', 'Pulver', { src: 'Lieferant' }),
@@ -27,85 +30,79 @@ c.add(
     fld('supplier.material.internalId', 'Interne Produkt-ID', 'SUP-NMC622-001', { src: 'Lieferant' }),
     fld('supplier.material.dppRef', 'DPP-Referenz', 'DPP-MAT-2024-00123', { src: 'DPP-Plattform' }),
   ],
-  [link('Verwendung im OEM-Produkt', PAGES.oem)],
-);
+  related: [link('Verwendung im OEM-Produkt', 'oem')],
+});
 
-const comp: [string, string, string, string, number, 'ok' | 'warn' | 'open', string][] = [
-  ['ccf', 'CCF', 'Corporate Carbon Footprint', 'Der organisationsbezogene CO₂-Fußabdruck des Lieferanten. Er wird nicht mit dem Produkt-Fußabdruck addiert.', 100, 'ok', 'Vollständig'],
-  ['pcf', 'PCF', 'Product Carbon Footprint', 'Der produktbezogene, allokierte Emissionsbeitrag des Lieferanten.', 75, 'warn', 'In Prüfung'],
-  ['ppwr', 'PPWR', 'Verpackung & Recycling', 'Verpackungsanforderungen. Geltung und Umfang folgen einem versionierten Regelwerk.', 100, 'ok', 'Vollständig'],
-  ['material', 'Materialdaten', 'Zusammensetzung & Herkunft', 'Stoffliche Zusammensetzung und Herkunft des gelieferten Materials.', 100, 'ok', 'Vollständig'],
-  ['transport', 'Transportdaten', 'Logistik & Emissionen', 'Sendungen und zugehörige Emissionen.', 80, 'warn', 'In Prüfung'],
-  ['qualityproof', 'Qualitätsnachweise', 'Prüfungen & Zertifikate', 'Zertifikate und Prüfberichte mit Gültigkeitszeitraum.', 40, 'open', 'Offen'],
+interface ComplianceRow { id: string; title: string; subtitle: string; summary: string; pct: number; tone: Tone; label: string }
+const compliance: ComplianceRow[] = [
+  { id: 'ccf', title: 'CCF', subtitle: 'Corporate Carbon Footprint', summary: 'Der organisationsbezogene CO₂-Fußabdruck des Lieferanten. Er wird nicht mit dem Produkt-Fußabdruck addiert.', pct: 100, tone: 'ok', label: 'Vollständig' },
+  { id: 'pcf', title: 'PCF', subtitle: 'Product Carbon Footprint', summary: 'Der produktbezogene, allokierte Emissionsbeitrag des Lieferanten.', pct: 75, tone: 'warn', label: 'In Prüfung' },
+  { id: 'ppwr', title: 'PPWR', subtitle: 'Verpackung & Recycling', summary: 'Verpackungsanforderungen. Geltung und Umfang folgen einem versionierten Regelwerk.', pct: 100, tone: 'ok', label: 'Vollständig' },
+  { id: 'material', title: 'Materialdaten', subtitle: 'Zusammensetzung & Herkunft', summary: 'Stoffliche Zusammensetzung und Herkunft des gelieferten Materials.', pct: 100, tone: 'ok', label: 'Vollständig' },
+  { id: 'transport', title: 'Transportdaten', subtitle: 'Logistik & Emissionen', summary: 'Sendungen und zugehörige Emissionen.', pct: 80, tone: 'warn', label: 'In Prüfung' },
+  { id: 'qualityproof', title: 'Qualitätsnachweise', subtitle: 'Prüfungen & Zertifikate', summary: 'Zertifikate und Prüfberichte mit Gültigkeitszeitraum.', pct: 40, tone: 'open', label: 'Offen' },
 ];
-for (const [id, title, sub, summary, pct, tone, label] of comp) {
-  c.add(
-    `supplier.compliance.${id}`,
-    `${title}: ${sub}`,
-    `${summary} 100 % bedeutet nur: Alle für diese Pflicht konfigurierten Prüfungen sind erfüllt, nicht automatisch gesetzliche Konformität.`,
-    [
-      fld(`supplier.compliance.${id}.status`, 'Status', label, { src: 'Prüfregeln', tone }),
-      fld(`supplier.compliance.${id}.coverage`, 'Erfüllungsgrad', pct, { unit: '%', src: 'Prüfregeln', tone }),
-    ],
-  );
-}
+export const supplierComplianceIds = c.group('supplier.compliance', compliance, (r, id) => ({
+  title: r.title,
+  subtitle: r.subtitle,
+  summary: `${r.summary} 100 % bedeutet nur: Alle für diese Pflicht konfigurierten Prüfungen sind erfüllt, nicht automatisch gesetzliche Konformität.`,
+  fields: [
+    fld(`${id}.status`, 'Status', r.label, { src: 'Prüfregeln', tone: r.tone }),
+    fld(`${id}.coverage`, 'Erfüllungsgrad', r.pct, { unit: '%', src: 'Prüfregeln', tone: r.tone }),
+  ],
+}));
 
-const evid: [string, string, string, string, 'ok' | 'warn' | 'open', string][] = [
-  ['material', 'Materialzertifikat NMC622', 'Materialnachweis', 'Vollständig', 'ok', '12.03.2024'],
-  ['coa', 'Qualitätszertifikat (CoA)', 'Qualitätsnachweis', 'In Prüfung', 'warn', '08.03.2024'],
-  ['reach', 'REACH-Konformität', 'Compliance', 'Vollständig', 'ok', '10.03.2024'],
-  ['ppwr', 'PPWR-Verpackungsnachweis', 'Compliance', 'Vollständig', 'ok', '10.03.2024'],
-  ['iso', 'ISO 9001 Zertifikat', 'Qualitätsnachweis', 'Offen', 'open', '07.03.2024'],
+interface EvidenceRow { id: string; doc: string; type: string; status: string; tone: Tone; date: string }
+const evidence: EvidenceRow[] = [
+  { id: 'material', doc: 'Materialzertifikat NMC622', type: 'Materialnachweis', status: 'Vollständig', tone: 'ok', date: '12.03.2024' },
+  { id: 'coa', doc: 'Qualitätszertifikat (CoA)', type: 'Qualitätsnachweis', status: 'In Prüfung', tone: 'warn', date: '08.03.2024' },
+  { id: 'reach', doc: 'REACH-Konformität', type: 'Compliance', status: 'Vollständig', tone: 'ok', date: '10.03.2024' },
+  { id: 'ppwr', doc: 'PPWR-Verpackungsnachweis', type: 'Compliance', status: 'Vollständig', tone: 'ok', date: '10.03.2024' },
+  { id: 'iso', doc: 'ISO 9001 Zertifikat', type: 'Qualitätsnachweis', status: 'Offen', tone: 'open', date: '07.03.2024' },
 ];
-for (const [id, doc, type, status, tone, date] of evid) {
-  c.add(
-    `supplier.evidence.${id}`,
-    doc,
-    'Nachweise verweisen auf das Originaldokument im Dokumentenmanagement und tragen Gültigkeit, Prüfer, Status und Version. Abgelaufene Nachweise werden nie als gültig angezeigt.',
-    [
-      fld(`supplier.evidence.${id}.doc`, 'Dokument', doc, { src: 'DMS / QMS' }),
-      fld(`supplier.evidence.${id}.type`, 'Typ', type, { src: 'DMS / QMS' }),
-      fld(`supplier.evidence.${id}.status`, 'Status', status, { src: 'DMS / QMS', tone }),
-      fld(`supplier.evidence.${id}.date`, 'Datum', date, { src: 'DMS / QMS' }),
-    ],
-  );
-}
+export const supplierEvidenceIds = c.group('supplier.evidence', evidence, (r, id) => ({
+  title: r.doc,
+  summary: 'Nachweise verweisen auf das Originaldokument im Dokumentenmanagement und tragen Gültigkeit, Prüfer, Status und Version. Abgelaufene Nachweise werden nie als gültig angezeigt.',
+  fields: [
+    fld(`${id}.doc`, 'Dokument', r.doc, { src: 'DMS / QMS' }),
+    fld(`${id}.type`, 'Typ', r.type, { src: 'DMS / QMS' }),
+    fld(`${id}.status`, 'Status', r.status, { src: 'DMS / QMS', tone: r.tone }),
+    fld(`${id}.date`, 'Datum', r.date, { src: 'DMS / QMS' }),
+  ],
+}));
 
-const ship: [string, string, string, string, 'ok' | 'warn' | 'neutral'][] = [
-  ['pickup', 'Abholung Werk', 'Leipzig, Deutschland · 12.03.2024, 08:00', 'Erledigt', 'ok'],
-  ['transit', 'Transport zu OEM', 'München, Deutschland · vsl. 13.03.2024, 14:00', 'In Transit', 'warn'],
-  ['handover', 'Übergabe an OEM', 'München, Deutschland · vsl. 13.03.2024, 16:00', 'Geplant', 'neutral'],
+interface ShipmentRow { id: string; title: string; detail: string; status: string; tone: Tone }
+const shipment: ShipmentRow[] = [
+  { id: 'pickup', title: 'Abholung Werk', detail: 'Leipzig, Deutschland · 12.03.2024, 08:00', status: 'Erledigt', tone: 'ok' },
+  { id: 'transit', title: 'Transport zu OEM', detail: 'München, Deutschland · vsl. 13.03.2024, 14:00', status: 'In Transit', tone: 'warn' },
+  { id: 'handover', title: 'Übergabe an OEM', detail: 'München, Deutschland · vsl. 13.03.2024, 16:00', status: 'Geplant', tone: 'neutral' },
 ];
-for (const [id, title, detail, status, tone] of ship) {
-  c.add(
-    `supplier.shipment.${id}`,
-    title,
-    'Etappe einer Sendung aus dem Transportmanagementsystem. Etappen ohne zugrunde liegende Sendung werden nie als reale Lieferung gezeigt.',
-    [
-      fld(`supplier.shipment.${id}.detail`, 'Ort und Zeit', detail, { src: 'TMS' }),
-      fld(`supplier.shipment.${id}.status`, 'Status', status, { src: 'TMS', tone }),
-    ],
-  );
-}
+export const supplierShipmentIds = c.group('supplier.shipment', shipment, (r, id) => ({
+  title: r.title,
+  summary: 'Etappe einer Sendung aus dem Transportmanagementsystem. Etappen ohne zugrunde liegende Sendung werden nie als reale Lieferung gezeigt.',
+  fields: [
+    fld(`${id}.detail`, 'Ort und Zeit', r.detail, { src: 'TMS' }),
+    fld(`${id}.status`, 'Status', r.status, { src: 'TMS', tone: r.tone }),
+  ],
+}));
 
-c.add(
-  'supplier.shipment.info',
-  'Sendungsdetails',
-  'Kennwerte der Sendung. Transportemissionen ändern sich bei einer Gewichtsänderung nur, wenn die Zuordnung auf der tatsächlichen Gütermasse beruht.',
-  [
+c.add('supplier.shipment.info', {
+  title: 'Sendungsdetails',
+  icon: 'truck',
+  summary: 'Kennwerte der Sendung. Transportemissionen ändern sich bei einer Gewichtsänderung nur, wenn die Zuordnung auf der tatsächlichen Gütermasse beruht.',
+  fields: [
     fld('supplier.shipment.id', 'Sendungs-ID', 'SHP-2024-00342', { src: 'TMS' }),
     fld('supplier.shipment.mass', 'Menge', '12.000', { unit: 'kg', src: 'TMS' }),
     fld('supplier.shipment.mode', 'Transportmittel', 'LKW (Euro 6)', { src: 'TMS' }),
     fld('supplier.shipment.emissions', 'Transportemissionen', '1,2', { unit: 't CO₂e', src: 'TMS / Berechnungsdienst' }),
   ],
-  [link('CO₂ & Scopes', PAGES.footprint)],
-);
+  related: [link('CO₂ & Scopes', 'footprint')],
+});
 
-c.add(
-  'supplier.impact',
-  'Impact meines Beitrags',
-  'Beitrag des Zulieferers zum Produkt-CO₂-Fußabdruck, getrennt nach Material, Fertigung und Transport. Die Zuordnung zum Produkt folgt einer dokumentierten Allokation.',
-  [
+c.add('supplier.impact', {
+  title: 'Impact meines Beitrags',
+  summary: 'Beitrag des Zulieferers zum Produkt-CO₂-Fußabdruck, getrennt nach Material, Fertigung und Transport. Die Zuordnung zum Produkt folgt einer dokumentierten Allokation.',
+  fields: [
     fld('supplier.impact.material', 'Material', 24, { unit: 't CO₂e', src: 'Berechnungsdienst' }),
     fld('supplier.impact.production', 'Fertigung', 12, { unit: 't CO₂e', src: 'Berechnungsdienst' }),
     fld('supplier.impact.transport', 'Transport', 4, { unit: 't CO₂e', src: 'Berechnungsdienst' }),
@@ -116,11 +113,7 @@ c.add(
       desc: 'Prozentwerte gibt es nur bei vorhandenem, vergleichbarem Basisdatensatz.',
     }),
   ],
-  [link('CO₂ & Scopes', PAGES.footprint)],
-);
+  related: [link('CO₂ & Scopes', 'footprint')],
+});
 
 export const supplierContent = { fields: c.fields, sections: c.sections };
-export const supplierChainIds = chain.map(([id]) => `supplier.chain.${id}`);
-export const supplierComplianceIds = comp.map(([id]) => `supplier.compliance.${id}`);
-export const supplierEvidenceIds = evid.map(([id]) => `supplier.evidence.${id}`);
-export const supplierShipmentIds = ship.map(([id]) => `supplier.shipment.${id}`);

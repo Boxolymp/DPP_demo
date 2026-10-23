@@ -1,41 +1,48 @@
-import { createContent, fld, link, PAGES } from './builder';
+import type { IconName } from '../components/ui/Icon';
+import { createContent, fld, link } from './builder';
 
 const c = createContent();
 
-const stages: [string, string, string, string, [number, number, number]?][] = [
-  ['raw', 'Rohstoffe & Vorverarbeitung', 'Abbau und Aufbereitung der Rohstoffe. Aus OEM-Sicht gehören diese Emissionen zu den vorgelagerten Scope-3-Emissionen.', 'Gewinnung und Aufbereitung von Lithium, Nickel, Kobalt und Graphit.'],
-  ['material', 'Materialherstellung', 'Herstellung der Aktivmaterialien, z. B. Kathoden- und Anodenmaterial.', 'Chemische Verarbeitung der Rohstoffe zu Batteriematerialien.'],
-  ['cell', 'Zellfertigung', 'Herstellung von Batteriezellen. Aus OEM-Sicht sind die Emissionen der Zellfertigung Teil der vorgelagerten Scope-3-Emissionen.', 'Herstellung von Batteriezellen', [12, 34, 54]],
-  ['module', 'Modulfertigung', 'Zusammenbau der Zellen zu Modulen.', 'Montage von Zellen zu Modulen.'],
-  ['pack', 'Pack Assembly', 'Zusammenbau der Module zum fertigen Batteriepack.', 'Montage von Modulen zum Pack inklusive Gehäuse und Elektronik.'],
-  ['distribution', 'Distribution', 'Transporte zwischen Werken und zum Fahrzeughersteller.', 'Transport und Lagerung.'],
-  ['use', 'Nutzung', 'Betrieb im Fahrzeug. Die Emissionen hängen vor allem vom Strommix beim Laden ab.', 'Laden und Betrieb im Fahrzeug.'],
-  ['eol', 'End-of-Life & Recycling', 'Demontage, Recycling und Rückgewinnung von Materialien.', 'Demontage und Stoffrückgewinnung.'],
-];
-for (const [id, title, summary, what, scopes] of stages) {
-  c.add(
-    `footprint.stage.${id}`,
-    title,
-    summary,
-    [
-      fld(`footprint.stage.${id}.what`, 'Was passiert hier', what),
-      fld(`footprint.stage.${id}.scope1`, 'Scope 1 (direkte Emissionen)', scopes?.[0], {
-        unit: '%',
-        src: 'ERP / MES',
-        desc: 'Anteil direkter Emissionen der betrachteten Organisation. Ohne angebundene Daten nicht verfügbar.',
-      }),
-      fld(`footprint.stage.${id}.scope2`, 'Scope 2 (eingekaufte Energie)', scopes?.[1], { unit: '%', src: 'ERP / MES' }),
-      fld(`footprint.stage.${id}.scope3`, 'Scope 3 (vor- und nachgelagert)', scopes?.[2], { unit: '%', src: 'ERP / LCA' }),
-    ],
-    [link('Beitrag der Zulieferer', PAGES.supplier), link('OEM-Wertschöpfung', PAGES.oem)],
-  );
+interface StageRow {
+  id: string;
+  title: string;
+  icon: IconName;
+  summary: string;
+  what: string;
+  /** Beispielanteile Scope 1–3 in %; nur Phasen mit Beispieldaten haben sie (und ein PCF-Ergebnis). */
+  scopes?: [number, number, number];
 }
+const stages: StageRow[] = [
+  { id: 'raw', title: 'Rohstoffe & Vorverarbeitung', icon: 'box', summary: 'Abbau und Aufbereitung der Rohstoffe. Aus OEM-Sicht gehören diese Emissionen zu den vorgelagerten Scope-3-Emissionen.', what: 'Gewinnung und Aufbereitung von Lithium, Nickel, Kobalt und Graphit.' },
+  { id: 'material', title: 'Materialherstellung', icon: 'factory', summary: 'Herstellung der Aktivmaterialien, z. B. Kathoden- und Anodenmaterial.', what: 'Chemische Verarbeitung der Rohstoffe zu Batteriematerialien.' },
+  { id: 'cell', title: 'Zellfertigung', icon: 'battery', summary: 'Herstellung von Batteriezellen. Aus OEM-Sicht sind die Emissionen der Zellfertigung Teil der vorgelagerten Scope-3-Emissionen.', what: 'Herstellung von Batteriezellen', scopes: [12, 34, 54] },
+  { id: 'module', title: 'Modulfertigung', icon: 'gear', summary: 'Zusammenbau der Zellen zu Modulen.', what: 'Montage von Zellen zu Modulen.' },
+  { id: 'pack', title: 'Pack Assembly', icon: 'box', summary: 'Zusammenbau der Module zum fertigen Batteriepack.', what: 'Montage von Modulen zum Pack inklusive Gehäuse und Elektronik.' },
+  { id: 'distribution', title: 'Distribution', icon: 'truck', summary: 'Transporte zwischen Werken und zum Fahrzeughersteller.', what: 'Transport und Lagerung.' },
+  { id: 'use', title: 'Nutzung', icon: 'car', summary: 'Betrieb im Fahrzeug. Die Emissionen hängen vor allem vom Strommix beim Laden ab.', what: 'Laden und Betrieb im Fahrzeug.' },
+  { id: 'eol', title: 'End-of-Life & Recycling', icon: 'recycle', summary: 'Demontage, Recycling und Rückgewinnung von Materialien.', what: 'Demontage und Stoffrückgewinnung.' },
+];
+const stageIds = c.group('footprint.stage', stages, (r, id) => ({
+  title: r.title,
+  icon: r.icon,
+  summary: r.summary,
+  fields: [
+    fld(`${id}.what`, 'Was passiert hier', r.what),
+    fld(`${id}.scope1`, 'Scope 1 (direkte Emissionen)', r.scopes?.[0], {
+      unit: '%',
+      src: 'ERP / MES',
+      desc: 'Anteil direkter Emissionen der betrachteten Organisation. Ohne angebundene Daten nicht verfügbar.',
+    }),
+    fld(`${id}.scope2`, 'Scope 2 (eingekaufte Energie)', r.scopes?.[1], { unit: '%', src: 'ERP / MES' }),
+    fld(`${id}.scope3`, 'Scope 3 (vor- und nachgelagert)', r.scopes?.[2], { unit: '%', src: 'ERP / LCA' }),
+  ],
+  related: [link('Beitrag der Zulieferer', 'supplier'), link('OEM-Wertschöpfung', 'oem')],
+}));
 
-c.add(
-  'footprint.rules',
-  'Relevanz für den Batteriepass (PCF)',
-  'Welche Lebenszyklusphasen im Produkt-CO₂-Fußabdruck enthalten sind und ab wann welche Daten verpflichtend sind, folgt einem versionierten Regelwerk. Die Demo trifft dazu keine eigenen Aussagen.',
-  [
+c.add('footprint.rules', {
+  title: 'Relevanz für den Batteriepass (PCF)',
+  summary: 'Welche Lebenszyklusphasen im Produkt-CO₂-Fußabdruck enthalten sind und ab wann welche Daten verpflichtend sind, folgt einem versionierten Regelwerk. Die Demo trifft dazu keine eigenen Aussagen.',
+  fields: [
     fld('footprint.rules.phase', 'Enthaltene Lebenszyklusphase', 'Herstellung', { src: 'Regelwerk' }),
     fld('footprint.rules.pcf', 'Zeitpunkt für PCF-Daten', undefined, {
       src: 'Regelwerk',
@@ -43,67 +50,74 @@ c.add(
     }),
     fld('footprint.rules.dpp', 'Weitere DPP-Daten', undefined, { src: 'Regelwerk' }),
   ],
-);
+});
 
-const sources: [string, string, string][] = [
-  ['erp', 'ERP', 'Energieverbrauch, Mengen, Kosten'],
-  ['mes', 'MES', 'Prozessdaten, Ausschuss, Auslastung'],
-  ['lca', 'LCA-Datenbank', 'Emissionsfaktoren, z. B. ecoinvent, GaBi'],
-  ['plm', 'PLM', 'Materialdaten, Stückliste, Gewichte, Chemie'],
-  ['logistics', 'Logistik', 'Transportdaten, Strecken, Verkehrsträger'],
+interface SourceRow { id: string; title: string; icon: IconName; data: string }
+const sources: SourceRow[] = [
+  { id: 'erp', title: 'ERP', icon: 'doc', data: 'Energieverbrauch, Mengen, Kosten' },
+  { id: 'mes', title: 'MES', icon: 'gear', data: 'Prozessdaten, Ausschuss, Auslastung' },
+  { id: 'lca', title: 'LCA-Datenbank', icon: 'leaf', data: 'Emissionsfaktoren, z. B. ecoinvent, GaBi' },
+  { id: 'plm', title: 'PLM', icon: 'box', data: 'Materialdaten, Stückliste, Gewichte, Chemie' },
+  { id: 'logistics', title: 'Logistik', icon: 'truck', data: 'Transportdaten, Strecken, Verkehrsträger' },
 ];
-for (const [id, title, data] of sources) {
-  c.add(
-    `footprint.source.${id}`,
-    title,
-    'Quellsystem für die ausgewählte Lebenszyklusphase. Jede Datenleitung ist später eine auflösbare Beziehung von Quelldatensatz über das kanonische Produktmodell bis zur berechneten Kennzahl.',
-    [
-      fld(`footprint.source.${id}.data`, 'Gelieferte Daten', data),
-      fld(`footprint.source.${id}.status`, 'Verbindung', undefined, {
-        src: title,
-        desc: 'Ohne Connector bleibt „nicht angebunden“ stehen, es wird keine Integration vorgetäuscht.',
-      }),
-    ],
-  );
-}
+export const footprintSourceIds = c.group('footprint.source', sources, (r, id) => ({
+  title: r.title,
+  icon: r.icon,
+  summary: 'Quellsystem für die ausgewählte Lebenszyklusphase. Jede Datenleitung ist später eine auflösbare Beziehung von Quelldatensatz über das kanonische Produktmodell bis zur berechneten Kennzahl.',
+  fields: [
+    fld(`${id}.data`, 'Gelieferte Daten', r.data),
+    fld(`${id}.status`, 'Verbindung', undefined, {
+      src: r.title,
+      desc: 'Ohne Connector bleibt „nicht angebunden“ stehen, es wird keine Integration vorgetäuscht.',
+    }),
+  ],
+}));
 
-const semantic: [string, string, string, string][] = [
-  ['harmonize', 'Datenharmonisierung', 'Einheiten, Bezeichner, Definitionen', 'Vereinheitlicht Einheiten, Begriffe, Zeit- und Ortsbezug, damit Daten aus verschiedenen Systemen vergleichbar sind.'],
-  ['refs', 'Produkt- und Prozessreferenzen', 'Zuordnung zu Zelle, Werk, Zeitraum', 'Verknüpft jede Messung mit Produkt, Werk, Charge und Zeitraum.'],
-  ['calc', 'Emissionsberechnung', 'Methodik, Allokation, Qualitätsregeln', 'Aktivitätsdaten mal Emissionsfaktor mal Allokation, mit dokumentierter Methode und Version.'],
-  ['quality', 'Datenqualität', 'Vollständigkeit, Plausibilität, Nachweise', 'Prüft Vollständigkeit und Plausibilität und weist Lücken aus statt sie zu füllen.'],
+interface SemanticRow { id: string; title: string; icon: IconName; data: string; summary: string }
+const semantic: SemanticRow[] = [
+  { id: 'harmonize', title: 'Datenharmonisierung', icon: 'link', data: 'Einheiten, Bezeichner, Definitionen', summary: 'Vereinheitlicht Einheiten, Begriffe, Zeit- und Ortsbezug, damit Daten aus verschiedenen Systemen vergleichbar sind.' },
+  { id: 'refs', title: 'Produkt- und Prozessreferenzen', icon: 'doc', data: 'Zuordnung zu Zelle, Werk, Zeitraum', summary: 'Verknüpft jede Messung mit Produkt, Werk, Charge und Zeitraum.' },
+  { id: 'calc', title: 'Emissionsberechnung', icon: 'chart', data: 'Methodik, Allokation, Qualitätsregeln', summary: 'Aktivitätsdaten mal Emissionsfaktor mal Allokation, mit dokumentierter Methode und Version.' },
+  { id: 'quality', title: 'Datenqualität', icon: 'shield', data: 'Vollständigkeit, Plausibilität, Nachweise', summary: 'Prüft Vollständigkeit und Plausibilität und weist Lücken aus statt sie zu füllen.' },
 ];
-for (const [id, title, data, summary] of semantic) {
-  c.add(`footprint.semantic.${id}`, title, summary, [fld(`footprint.semantic.${id}.data`, 'Aufgabe', data)]);
-}
+export const footprintSemanticIds = c.group('footprint.semantic', semantic, (r, id) => ({
+  title: r.title,
+  icon: r.icon,
+  summary: r.summary,
+  fields: [fld(`${id}.data`, 'Aufgabe', r.data)],
+}));
 
-c.add(
-  'footprint.result',
-  'Ergebnis für den Batteriepass (PCF)',
-  'CO₂-Fußabdruck der ausgewählten Phase pro kWh Zellkapazität, aufgeteilt nach Scope-Anteilen. Unternehmens-Scopes und Produkt-PCF sind verschiedene Bilanzierungen und werden nicht doppelt gezählt.',
-  [
+c.add('footprint.result', {
+  title: 'Ergebnis für den Batteriepass (PCF)',
+  summary: 'CO₂-Fußabdruck der ausgewählten Phase pro kWh Zellkapazität, aufgeteilt nach Scope-Anteilen. Unternehmens-Scopes und Produkt-PCF sind verschiedene Bilanzierungen und werden nicht doppelt gezählt.',
+  fields: [
     fld('footprint.result.total', 'CO₂-Fußabdruck Zellfertigung', '28,4', { unit: 'kg CO₂e/kWh', src: 'Berechnungsdienst' }),
     fld('footprint.result.s1', 'davon Scope 1', '3,4', { unit: 'kg', src: 'Berechnungsdienst' }),
     fld('footprint.result.s2', 'davon Scope 2', '9,7', { unit: 'kg', src: 'Berechnungsdienst' }),
     fld('footprint.result.s3', 'davon Scope 3', '15,3', { unit: 'kg', src: 'Berechnungsdienst' }),
   ],
-  [link('Lifecycle Impact (OEM)', PAGES.oem)],
-);
+  related: [link('Lifecycle Impact (OEM)', 'oem')],
+});
 
-c.add(
-  'footprint.output',
-  'Einfluss auf den Digitalen Batteriepass',
-  'Das berechnete Ergebnis wird als kuratiertes Feld in den Produktpass übernommen, nach Lebenszyklusphasen gegliedert.',
-  [
+c.add('footprint.output', {
+  title: 'Einfluss auf den Digitalen Batteriepass',
+  icon: 'doc',
+  summary: 'Das berechnete Ergebnis wird als kuratiertes Feld in den Produktpass übernommen, nach Lebenszyklusphasen gegliedert.',
+  fields: [
     fld('footprint.output.co2', 'CO₂-Fußabdruck nach Lebenszyklusphase', 'Rohstoffe, Herstellung, Distribution, End-of-Life', { src: 'DPP' }),
   ],
-  [link('Öffentliche Sicht (Endkunde)', PAGES.customer)],
-);
+  related: [link('Öffentliche Sicht (Endkunde)', 'customer')],
+});
 
 export const footprintContent = { fields: c.fields, sections: c.sections };
-export const footprintStages = stages.map(([id, title]) => ({ id: `footprint.stage.${id}`, title, key: id }));
-export const footprintSourceIds = sources.map(([id]) => `footprint.source.${id}`);
-export const footprintSemanticIds = semantic.map(([id]) => `footprint.semantic.${id}`);
+export const footprintStages = stages.map((r, i) => ({
+  id: stageIds[i],
+  title: r.title,
+  icon: r.icon,
+  /** Nur Phasen mit Beispieldaten haben ein PCF-Ergebnis. */
+  hasResult: r.scopes !== undefined,
+}));
+export const footprintDefaultStageId = footprintStages.find((s) => s.hasResult)?.id ?? footprintStages[0].id;
 
 export const scopeLegend = [
   { id: 1, title: 'Scope 1', text: 'Direkte Emissionen' },

@@ -1,36 +1,11 @@
 import { BarChart } from '../../components/charts/BarChart';
+import { ArrowChain, ChainNode } from '../../components/ui/Chain';
 import { Badge, FieldBadge } from '../../components/ui/DataValue';
-import { Icon, type IconName } from '../../components/ui/Icon';
+import { Icon } from '../../components/ui/Icon';
 import { FieldMetric, PageHero, SectionCard, SectionTitle } from '../../components/ui/SectionCard';
 import { Tile } from '../../components/ui/Tile';
 import { oemChainIds, oemDppIds, oemEngIds } from '../../content/oem';
-import { useField, useSection } from '../../hooks/useContent';
-
-const CHAIN_ICONS: Record<string, IconName> = {
-  raw: 'box',
-  cell: 'battery',
-  module: 'box',
-  oem: 'car',
-  logistics: 'truck',
-  use: 'bolt',
-  secondlife: 'gear',
-  recycling: 'recycle',
-};
-const ENG_ICONS: IconName[] = ['battery', 'box', 'gear', 'wrench', 'doc'];
-const DPP_ICONS: IconName[] = ['box', 'factory', 'doc', 'truck', 'car', 'gear', 'recycle'];
-
-function ChainNode({ id }: { id: string }) {
-  const s = useSection(id);
-  const kind = id.split('.').pop() ?? '';
-  return (
-    <SectionCard id={id} className="chain__node">
-      <span className="chain__icon">
-        <Icon name={CHAIN_ICONS[kind] ?? 'box'} size={22} />
-      </span>
-      <span className="chain__label">{s.title}</span>
-    </SectionCard>
-  );
-}
+import { useField } from '../../hooks/useContent';
 
 export function OemPage() {
   const product = useField('oem.product.name');
@@ -70,29 +45,19 @@ export function OemPage() {
             <li><span className="legend__line legend__line--linear" /> Linearer Fluss</li>
             <li><span className="legend__line legend__line--loop" /> Zirkulärer Fluss</li>
           </ul>
-          <div className="chain chain--linear">
-            {linear.map((id, i) => (
-              <div className="chain__step" key={id}>
-                <ChainNode id={id} />
-                {i < linear.length - 1 ? <span className="chain__arrow"><Icon name="arrow" size={18} /></span> : null}
-              </div>
-            ))}
-          </div>
-          <div className="chain chain--loop">
-            {loop.map((id, i) => (
-              <div className="chain__step" key={id}>
-                <ChainNode id={id} />
-                {i < loop.length - 1 ? <span className="chain__arrow chain__arrow--back"><Icon name="arrow" size={18} /></span> : null}
-              </div>
-            ))}
-          </div>
+          <ArrowChain ids={linear} className="chain chain--linear">
+            {(id) => <ChainNode id={id} />}
+          </ArrowChain>
+          <ArrowChain ids={loop} className="chain chain--loop" back>
+            {(id) => <ChainNode id={id} />}
+          </ArrowChain>
         </div>
 
         <div className="card">
           <SectionTitle sub="Nachhaltig by Design, mit validen Daten aus der Wertschöpfung.">Design & Engineering</SectionTitle>
           <div className="stack">
-            {oemEngIds.map((id, i) => (
-              <Tile key={id} id={id} icon={ENG_ICONS[i]} fieldKey={`${id}.value`} />
+            {oemEngIds.map((id) => (
+              <Tile key={id} id={id} fieldKey={`${id}.value`} />
             ))}
           </div>
         </div>
@@ -117,10 +82,14 @@ export function OemPage() {
           <SectionTitle sub="kg CO₂e pro kWh">Lifecycle Impact</SectionTitle>
           <div className="lifecycle">
             <BarChart
-              fieldKeys={['oem.lifecycle.raw', 'oem.lifecycle.cells', 'oem.lifecycle.modules', 'oem.lifecycle.use', 'oem.lifecycle.eol']}
-              labels={['Rohstoffe', 'Zellen', 'Module/Packs', 'Nutzung', 'End-of-Life']}
               max={30}
-              accent={[false, false, false, true, true]}
+              bars={[
+                { fieldKey: 'oem.lifecycle.raw', label: 'Rohstoffe' },
+                { fieldKey: 'oem.lifecycle.cells', label: 'Zellen' },
+                { fieldKey: 'oem.lifecycle.modules', label: 'Module/Packs' },
+                { fieldKey: 'oem.lifecycle.use', label: 'Nutzung', accent: true },
+                { fieldKey: 'oem.lifecycle.eol', label: 'End-of-Life', accent: true },
+              ]}
             />
             <FieldMetric fieldKey="oem.lifecycle.total" className="metric--big" />
           </div>
@@ -129,8 +98,8 @@ export function OemPage() {
 
       <SectionTitle sub="Alle relevanten Informationen, durchgängig strukturiert.">DPP-Informationen entlang des Produktlebenszyklus</SectionTitle>
       <div className="grid-tiles grid-tiles--7">
-        {oemDppIds.map((id, i) => (
-          <Tile key={id} id={id} icon={DPP_ICONS[i]} fieldKey={`${id}.data`} />
+        {oemDppIds.map((id) => (
+          <Tile key={id} id={id} fieldKey={`${id}.data`} />
         ))}
       </div>
     </div>

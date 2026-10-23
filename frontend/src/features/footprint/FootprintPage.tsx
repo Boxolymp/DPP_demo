@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Icon, type IconName } from '../../components/ui/Icon';
+import { formatValue } from '../../components/ui/DataValue';
+import { Icon } from '../../components/ui/Icon';
 import { FieldMetric, PageHero, SectionCard, SectionTitle } from '../../components/ui/SectionCard';
 import { Tile } from '../../components/ui/Tile';
 import {
+  footprintDefaultStageId,
   footprintSemanticIds,
   footprintSourceIds,
   footprintStages,
@@ -13,13 +15,20 @@ import { useField, useSection } from '../../hooks/useContent';
 type Mode = 'scopes' | 'pcf';
 type Tab = 'flow' | 'semantic' | 'impact';
 
-const STAGE_ICONS: IconName[] = ['box', 'factory', 'battery', 'gear', 'box', 'truck', 'car', 'recycle'];
-const SOURCE_ICONS: IconName[] = ['doc', 'gear', 'leaf', 'box', 'truck'];
-const SEMANTIC_ICONS: IconName[] = ['link', 'doc', 'chart', 'shield'];
+const RULE_KEYS = ['footprint.rules.phase', 'footprint.rules.pcf', 'footprint.rules.dpp'];
 
-function StageCard({ stageId, mode, onXray }: { stageId: string; mode: Mode; onXray: () => void }) {
+function RuleRow({ fieldKey }: { fieldKey: string }) {
+  const f = useField(fieldKey);
+  return (
+    <li className="fieldlist__static">
+      <span className="fieldlist__label">{f.label}</span>
+      <span className="fieldlist__value">{formatValue(f, false)}</span>
+    </li>
+  );
+}
+
+function StageCard({ stageId, hasResult, mode, onXray }: { stageId: string; hasResult: boolean; mode: Mode; onXray: () => void }) {
   const s = useSection(stageId);
-  const isCell = stageId === 'footprint.stage.cell';
   return (
     <SectionCard id={stageId} stretch={false} className="stage-card">
       <h2>{s.title}</h2>
@@ -30,7 +39,7 @@ function StageCard({ stageId, mode, onXray }: { stageId: string; mode: Mode; onX
           <FieldMetric fieldKey={`${stageId}.scope2`} />
           <FieldMetric fieldKey={`${stageId}.scope3`} />
         </div>
-      ) : isCell ? (
+      ) : hasResult ? (
         <div className="metrics metrics--1">
           <FieldMetric fieldKey="footprint.result.total" />
         </div>
@@ -46,10 +55,10 @@ function StageCard({ stageId, mode, onXray }: { stageId: string; mode: Mode; onX
 
 export function FootprintPage() {
   const [mode, setMode] = useState<Mode>('scopes');
-  const [stage, setStage] = useState(footprintStages[2].id);
+  const [stage, setStage] = useState(footprintDefaultStageId);
   const [tab, setTab] = useState<Tab>('flow');
   const stageTitle = useSection(stage).title;
-  const hasResult = stage === 'footprint.stage.cell';
+  const hasResult = footprintStages.find((s) => s.id === stage)?.hasResult ?? false;
   const total = useField('footprint.result.total');
 
   const openXray = () => {
@@ -72,7 +81,7 @@ export function FootprintPage() {
       </div>
 
       <div className="stage-band" role="group" aria-label="Lebenszyklusphase wählen">
-        {footprintStages.map((s, i) => (
+        {footprintStages.map((s) => (
           <button
             key={s.id}
             type="button"
@@ -80,7 +89,7 @@ export function FootprintPage() {
             aria-pressed={stage === s.id}
             onClick={() => setStage(s.id)}
           >
-            <Icon name={STAGE_ICONS[i]} size={22} />
+            <Icon name={s.icon} size={22} />
             <span>{s.title}</span>
           </button>
         ))}
@@ -101,11 +110,11 @@ export function FootprintPage() {
             Scopes gelten für eine Organisation und einen Berichtszeitraum. Ein Scope 1 beim Zulieferer ist beim OEM nicht automatisch Scope 1.
           </p>
         </div>
-        <StageCard stageId={stage} mode={mode} onXray={openXray} />
+        <StageCard stageId={stage} hasResult={hasResult} mode={mode} onXray={openXray} />
         <SectionCard id="footprint.rules" stretch={false}>
           <SectionTitle>Relevanz für den Batteriepass (PCF)</SectionTitle>
           <ul className="fieldlist">
-            {['footprint.rules.phase', 'footprint.rules.pcf', 'footprint.rules.dpp'].map((k) => (
+            {RULE_KEYS.map((k) => (
               <RuleRow key={k} fieldKey={k} />
             ))}
           </ul>
@@ -129,8 +138,8 @@ export function FootprintPage() {
             <div>
               <h3>Quellsysteme & Daten</h3>
               <div className="stack">
-                {footprintSourceIds.map((id, i) => (
-                  <Tile key={id} id={id} icon={SOURCE_ICONS[i]} fieldKey={`${id}.data`} />
+                {footprintSourceIds.map((id) => (
+                  <Tile key={id} id={id} fieldKey={`${id}.data`} />
                 ))}
               </div>
             </div>
@@ -138,8 +147,8 @@ export function FootprintPage() {
             <div>
               <h3>Semantik- und Integrationsschicht</h3>
               <div className="stack">
-                {footprintSemanticIds.map((id, i) => (
-                  <Tile key={id} id={id} icon={SEMANTIC_ICONS[i]} fieldKey={`${id}.data`} />
+                {footprintSemanticIds.map((id) => (
+                  <Tile key={id} id={id} fieldKey={`${id}.data`} />
                 ))}
               </div>
             </div>
@@ -165,29 +174,19 @@ export function FootprintPage() {
 
         {tab === 'semantic' ? (
           <div className="grid-tiles grid-tiles--4">
-            {footprintSemanticIds.map((id, i) => (
-              <Tile key={id} id={id} icon={SEMANTIC_ICONS[i]} fieldKey={`${id}.data`} className="tile--vertical" />
+            {footprintSemanticIds.map((id) => (
+              <Tile key={id} id={id} fieldKey={`${id}.data`} className="tile--vertical" />
             ))}
           </div>
         ) : null}
 
         {tab === 'impact' ? (
           <div className="grid-tiles grid-tiles--2">
-            <Tile id="footprint.output" icon="doc" fieldKey="footprint.output.co2" />
-            <Tile id="oem.lifecycle" icon="chart" fieldKey="oem.lifecycle.total" />
+            <Tile id="footprint.output" fieldKey="footprint.output.co2" />
+            <Tile id="oem.lifecycle" fieldKey="oem.lifecycle.total" />
           </div>
         ) : null}
       </div>
     </div>
-  );
-}
-
-function RuleRow({ fieldKey }: { fieldKey: string }) {
-  const f = useField(fieldKey);
-  return (
-    <li className="fieldlist__static">
-      <span className="fieldlist__label">{f.label}</span>
-      <span className="fieldlist__value">{f.value === undefined ? 'nicht verfügbar' : String(f.value)}</span>
-    </li>
   );
 }

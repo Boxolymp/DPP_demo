@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '../../components/ui/DataValue';
 import { Icon } from '../../components/ui/Icon';
 import { PRODUCT_GROUPS, SHOWROOM_INFO, type ProductGroup } from '../../content/showroom';
-import { productPath } from '../../lib/paths';
+import { productPath } from '../../lib/pages';
 import { Illustration } from './Illustrations';
 
 function Shelf({ group, dimmed }: { group: ProductGroup; dimmed: boolean }) {

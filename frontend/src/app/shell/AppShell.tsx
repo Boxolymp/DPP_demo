@@ -1,23 +1,9 @@
 import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
 import { EntityDrawer } from '../../components/drawers/EntityDrawer';
-import { Icon, type IconName } from '../../components/ui/Icon';
+import { Icon } from '../../components/ui/Icon';
 import { useProductId } from '../../hooks/useContent';
-import { productPath } from '../../lib/paths';
+import { PAGES, productPath } from '../../lib/pages';
 import { DrawerProvider } from '../providers/DrawerProvider';
-
-const PERSPECTIVES = [
-  { page: 'oem', label: 'OEM', icon: 'car' },
-  { page: 'customer', label: 'Endkunde', icon: 'user' },
-  { page: 'supplier', label: 'Zulieferer', icon: 'truck' },
-] as const;
-
-const VIEWS: { page: string; label: string; icon: IconName }[] = [
-  { page: 'oem', label: 'OEM', icon: 'car' },
-  { page: 'customer', label: 'Endkunde', icon: 'user' },
-  { page: 'supplier', label: 'Zulieferer', icon: 'truck' },
-  { page: 'footprint', label: 'CO₂ & Scopes', icon: 'leaf' },
-  { page: 'aftersales', label: 'Aftersales', icon: 'wrench' },
-];
 
 function Logo() {
   return (
@@ -38,8 +24,8 @@ function GlobalHeader({ inProduct }: { inProduct: boolean }) {
       </div>
       {inProduct ? (
         <nav className="switcher" aria-label="Perspektive">
-          {PERSPECTIVES.map((p) => (
-            <NavLink key={p.page} to={productPath(productId, p.page)} className="switcher__item">
+          {PAGES.filter((p) => p.perspective).map((p) => (
+            <NavLink key={p.id} to={productPath(productId, p.id)} className="switcher__item">
               <Icon name={p.icon} size={16} />
               {p.label}
             </NavLink>
@@ -66,8 +52,8 @@ function GlobalSidebar() {
         <span>Showroom</span>
       </Link>
       <p className="sidebar__group">Ansichten</p>
-      {VIEWS.map((v) => (
-        <NavLink key={v.page} to={productPath(productId, v.page)} className="sidebar__item">
+      {PAGES.map((v) => (
+        <NavLink key={v.id} to={productPath(productId, v.id)} className="sidebar__item">
           <Icon name={v.icon} />
           <span>{v.label}</span>
         </NavLink>

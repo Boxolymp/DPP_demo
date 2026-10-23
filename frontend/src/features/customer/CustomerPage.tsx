@@ -1,13 +1,10 @@
 import { useDrawer } from '../../app/providers/DrawerProvider';
 import { Badge } from '../../components/ui/DataValue';
-import { Icon, type IconName } from '../../components/ui/Icon';
+import { Icon } from '../../components/ui/Icon';
 import { FieldMetric, PageHero, SectionCard, SectionTitle } from '../../components/ui/SectionCard';
 import { Tile } from '../../components/ui/Tile';
 import { customerBenefitIds, customerPublicIds } from '../../content/customer';
 import { useField } from '../../hooks/useContent';
-
-const BENEFIT_ICONS: IconName[] = ['eye', 'shield', 'wrench', 'leaf'];
-const PUBLIC_ICONS: IconName[] = ['doc', 'leaf', 'recycle', 'wrench', 'globe'];
 
 /** Deterministisches Platzhalter-Muster, kein gültiger QR-Code. */
 function QrPlaceholder() {
@@ -81,8 +78,8 @@ export function CustomerPage() {
         <div className="customer-right">
           <SectionTitle>Was Sie als Endkunde erleben</SectionTitle>
           <div className="grid-tiles grid-tiles--4">
-            {customerBenefitIds.map((id, i) => (
-              <Tile key={id} id={id} icon={BENEFIT_ICONS[i]} fieldKey={`${id}.text`} className="tile--vertical" />
+            {customerBenefitIds.map((id) => (
+              <Tile key={id} id={id} fieldKey={`${id}.text`} className="tile--vertical" />
             ))}
           </div>
 
@@ -93,8 +90,8 @@ export function CustomerPage() {
             <Badge>Nur ausgewählte Informationen</Badge>
           </div>
           <div className="grid-tiles grid-tiles--5">
-            {customerPublicIds.map((id, i) => (
-              <Tile key={id} id={id} icon={PUBLIC_ICONS[i]} fieldKey={`${id}.data`} className="tile--vertical" />
+            {customerPublicIds.map((id) => (
+              <Tile key={id} id={id} fieldKey={`${id}.data`} className="tile--vertical" />
             ))}
           </div>
 
