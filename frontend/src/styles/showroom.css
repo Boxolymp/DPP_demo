@@ -1,0 +1,95 @@
+/* 2.5D-Showroom: Raum, Regale und Parallax nur über transform. */
+.room {
+  --px: 0;
+  --py: 0;
+  position: relative;
+  min-height: calc(100vh - var(--topbar-h));
+  overflow: hidden;
+  background: #efe8dc;
+  isolation: isolate;
+}
+.room__wall, .room__slats, .room__floor, .room__glow { position: absolute; pointer-events: none; z-index: -1; }
+.room__wall {
+  inset: -3% -3% 38% -3%;
+  background: linear-gradient(180deg, #f6f1e8, #e9e0d0);
+  transform: translate3d(calc(var(--px) * -8px), calc(var(--py) * -5px), 0);
+}
+.room__slats {
+  inset: 3% -3% 62% 28%;
+  background: repeating-linear-gradient(90deg, #b08a5e 0 10px, #9b774f 10px 14px);
+  opacity: 0.55;
+  transform: translate3d(calc(var(--px) * -12px), 0, 0);
+}
+.room__floor {
+  inset: 62% -3% -3% -3%;
+  background: linear-gradient(180deg, #d9c7ab, #c3ab88);
+  transform: translate3d(calc(var(--px) * 6px), calc(var(--py) * 4px), 0);
+}
+.room__glow {
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 28%, rgba(255, 244, 220, 0.9), transparent 70%);
+}
+.room__content { position: relative; padding: 28px 28px 24px; display: flex; flex-direction: column; gap: 22px; max-width: 1500px; margin: 0 auto; }
+.room__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+.room__head h1 { font-size: 32px; letter-spacing: -0.02em; }
+.room__head p { max-width: 640px; margin-top: 6px; color: #3e4a63; }
+.search { display: flex; align-items: center; gap: 8px; padding: 10px 16px; min-width: 280px; background: rgba(255, 255, 255, 0.85); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+.search input { border: 0; outline: 0; background: none; font: inherit; color: var(--text); flex: 1; min-width: 0; }
+.search:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+.shelves {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; align-items: end;
+  perspective: 1400px; perspective-origin: 50% 40%;
+  transform: translate3d(calc(var(--px) * 10px), calc(var(--py) * 4px), 0);
+}
+.shelf {
+  position: relative; display: flex; flex-direction: column; gap: 10px; padding: 14px;
+  border-radius: 16px; background: linear-gradient(180deg, #f4e7d3, #e4cfae);
+  border: 1px solid rgba(120, 90, 50, 0.25);
+  box-shadow: 0 18px 34px rgba(60, 40, 15, 0.25), inset 0 0 0 4px rgba(255, 255, 255, 0.35);
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.2s;
+  min-height: 430px;
+}
+.shelf--batteries { transform: rotateY(14deg) translateZ(0); transform-origin: right center; }
+.shelf--textiles { transform: rotateY(8deg); transform-origin: right center; }
+.shelf--electronics { transform: translateZ(24px); }
+.shelf--furniture { transform: rotateY(-8deg); transform-origin: left center; }
+.shelf--tires { transform: rotateY(-14deg); transform-origin: left center; }
+.shelf--active { cursor: pointer; outline: 3px solid var(--blue); outline-offset: 3px; background: linear-gradient(180deg, #fbf3e4, #ecd9b8); }
+.shelf--active:hover, .shelf--active:focus-visible { transform: rotateY(0deg) translateZ(30px) scale(1.03); box-shadow: 0 28px 48px rgba(37, 99, 235, 0.3); }
+.shelf--disabled { cursor: not-allowed; filter: saturate(0.75); }
+.shelf--dim { opacity: 0.35; }
+.shelf__top { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255, 255, 255, 0.92); border-radius: 12px; }
+.shelf__top > :last-child { margin-left: auto; color: var(--muted); }
+.shelf__top h2 { font-size: 18px; margin-bottom: 4px; }
+.shelf__icon { flex: none; color: var(--navy); }
+.shelf__scene { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px; }
+.shelf__scene svg { width: 100%; max-height: 210px; filter: drop-shadow(0 10px 8px rgba(40, 25, 5, 0.3)); }
+.shelf__text { background: rgba(255, 255, 255, 0.92); border-radius: 12px; padding: 12px; font-size: 14px; color: #2c3a58; min-height: 64px; }
+
+.info-bar { display: grid; grid-template-columns: 1.6fr 1fr 0.8fr; background: rgba(255, 255, 255, 0.92); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.info-bar__item { display: flex; gap: 12px; padding: 16px 20px; align-items: flex-start; }
+.info-bar__item + .info-bar__item { border-left: 1px solid var(--line); }
+.info-bar__item p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+@media (max-width: 1100px) {
+  .shelves { grid-template-columns: repeat(3, 1fr); perspective: none; transform: none; }
+  .shelf, .shelf--batteries, .shelf--textiles, .shelf--electronics, .shelf--furniture, .shelf--tires { transform: none; min-height: 0; }
+  .shelf--active:hover, .shelf--active:focus-visible { transform: translateY(-4px); }
+  .info-bar { grid-template-columns: 1fr; }
+  .info-bar__item + .info-bar__item { border-left: 0; border-top: 1px solid var(--line); }
+}
+@media (max-width: 700px) {
+  .shelves { grid-template-columns: 1fr 1fr; }
+  .room__content { padding: 18px 14px; }
+  .room__head h1 { font-size: 24px; }
+  .search { min-width: 0; width: 100%; }
+}
+@media (max-width: 480px) {
+  .shelves { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room__wall, .room__slats, .room__floor, .shelves { transform: none !important; }
+  .shelf--active:hover, .shelf--active:focus-visible { transform: none; }
+}
