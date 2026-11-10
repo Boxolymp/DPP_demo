@@ -1,95 +1,481 @@
-/* 2.5D-Showroom: Raum, Regale und Parallax nur über transform. */
+/* ============================================================================
+   DATACIDERS DPP SHOWROOM — RESPONSIVE REGALWAND
+   Vollstaendiger Ersatz fuer src/styles/showroom.css.
+
+   Kompatibel mit der bestehenden ShowroomPage.tsx und Illustrations.tsx.
+   Verwendet die vorhandenen Bilder unter:
+   public/images/showroom/{batteries,textiles,electronics,furniture,tires}.webp
+
+   base.css muss NICHT veraendert werden.
+
+   Ziele:
+   - Alle 5 Produktgruppen auf normalen Desktopmonitoren vollstaendig sichtbar
+   - Keine horizontale Ueberbreite durch Grid-, Bild- oder Text-Mindestgroessen
+   - Gleich hohe Regalnischen mit flaechenfuellenden WebP-Fotos
+   - Auf Desktop genau 5 Spalten, auf schmalen Fenstern horizontal scrollbar
+   - Kein Umbruch der Produktgruppen untereinander
+   ============================================================================ */
+
+/* 1. RAUM UND HINTERGRUND -------------------------------------------------- */
 .room {
   --px: 0;
   --py: 0;
+  --room-ink: #152941;
+  --room-blue: #2378ff;
+  --room-wood-dark: #92704c;
+  --room-wood-light: #cfad80;
+
   position: relative;
-  min-height: calc(100vh - var(--topbar-h));
-  overflow: hidden;
-  background: #efe8dc;
   isolation: isolate;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(100vh - var(--topbar-h, 56px));
+  min-height: calc(100dvh - var(--topbar-h, 56px));
+  overflow: hidden;
+  color: var(--room-ink);
+  background: #eee4d6;
 }
-.room__wall, .room__slats, .room__floor, .room__glow { position: absolute; pointer-events: none; z-index: -1; }
+
+.room__wall,
+.room__slats,
+.room__floor,
+.room__glow {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .room__wall {
-  inset: -3% -3% 38% -3%;
-  background: linear-gradient(180deg, #f6f1e8, #e9e0d0);
-  transform: translate3d(calc(var(--px) * -8px), calc(var(--py) * -5px), 0);
+  inset: 0 0 31%;
+  background:
+    radial-gradient(ellipse 85% 80% at 22% 10%, rgba(255,255,255,.75), transparent 75%),
+    linear-gradient(112deg, #f8f4ec 0%, #f0e6d9 62%, #e0d0bf 100%);
 }
+
 .room__slats {
-  inset: 3% -3% 62% 28%;
-  background: repeating-linear-gradient(90deg, #b08a5e 0 10px, #9b774f 10px 14px);
-  opacity: 0.55;
-  transform: translate3d(calc(var(--px) * -12px), 0, 0);
+  inset: 3% 0 51% 33%;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(100,68,34,.18) 0 2px,
+      #d5b993 3px 11px,
+      #c29d73 12px 14px,
+      #e0c7a6 15px 22px);
+  opacity: .72;
+  box-shadow: inset 45px 0 40px rgba(246,239,228,.4);
 }
+
 .room__floor {
-  inset: 62% -3% -3% -3%;
-  background: linear-gradient(180deg, #d9c7ab, #c3ab88);
-  transform: translate3d(calc(var(--px) * 6px), calc(var(--py) * 4px), 0);
+  inset: 69% 0 0;
+  background:
+    linear-gradient(180deg, rgba(125,93,56,.16), transparent 16%),
+    linear-gradient(180deg, #e5d3b9, #cdb391);
 }
+
 .room__glow {
   inset: 0;
-  background: radial-gradient(ellipse 60% 40% at 50% 28%, rgba(255, 244, 220, 0.9), transparent 70%);
+  background:
+    radial-gradient(ellipse 65% 43% at 45% 17%, rgba(255,255,255,.40), transparent 80%),
+    radial-gradient(ellipse 85% 18% at 50% 83%, rgba(90,61,31,.08), transparent 75%);
 }
-.room__content { position: relative; padding: 28px 28px 24px; display: flex; flex-direction: column; gap: 22px; max-width: 1500px; margin: 0 auto; }
-.room__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
-.room__head h1 { font-size: 32px; letter-spacing: -0.02em; }
-.room__head p { max-width: 640px; margin-top: 6px; color: #3e4a63; }
-.search { display: flex; align-items: center; gap: 8px; padding: 10px 16px; min-width: 280px; background: rgba(255, 255, 255, 0.85); border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
-.search input { border: 0; outline: 0; background: none; font: inherit; color: var(--text); flex: 1; min-width: 0; }
-.search:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
 
+/* 2. CONTENT-RAHMEN: BREITE IST IMMER AUF DEN VIEWPORT BEGRENZT ----------- */
+.room__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.5vw, 20px);
+  width: 100%;
+  max-width: 1720px;
+  min-width: 0;
+  margin-inline: auto;
+  padding: clamp(18px, 2vw, 30px) clamp(16px, 2.2vw, 36px) 34px;
+}
+
+.room__head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 26px;
+  min-width: 0;
+}
+
+.room__head > div {
+  flex: 1 1 480px;
+  min-width: 0;
+}
+
+.room__head h1 {
+  margin: 0;
+  color: var(--room-ink);
+  font-size: clamp(25px, 2.2vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -.035em;
+}
+
+.room__head p {
+  max-width: 700px;
+  margin-top: 9px;
+  color: #3e4c62;
+  font-size: clamp(13px, .98vw, 16px);
+  line-height: 1.45;
+}
+
+.room .search {
+  display: flex;
+  flex: 0 1 315px;
+  align-items: center;
+  gap: 9px;
+  width: min(100%, 315px);
+  min-width: 0;
+  padding: 11px 15px;
+  border: 1px solid rgba(39,52,70,.08);
+  border-radius: 999px;
+  color: #66758a;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 5px 20px rgba(50,35,20,.06);
+}
+
+.room .search input {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--room-ink);
+  font: inherit;
+}
+
+.room .search:focus-within {
+  outline: 2px solid var(--room-blue);
+  outline-offset: 2px;
+}
+
+/* 3. REGALWAND: ENTSCHEIDEND SIND minmax(0,1fr) UND min-width:0 ---------- */
 .shelves {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; align-items: end;
-  perspective: 1400px; perspective-origin: 50% 40%;
-  transform: translate3d(calc(var(--px) * 10px), calc(var(--py) * 4px), 0);
+  position: relative;
+  display: grid;
+  /* Fuenf Spalten IMMER nebeneinander; jede Spalte ist mindestens 185px breit. */
+  grid-template-columns: repeat(5, minmax(185px, 1fr));
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 9px;
+  /* Ein schmales Browser-/VS-Code-Vorschaufenster scrollt statt zu stapeln. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #a67f50 transparent;
+  border: 1px solid rgba(104,73,40,.32);
+  background: linear-gradient(90deg, #aa8155, #d2ac7c 10%, #bd9261 50%, #9b744c);
+  box-shadow:
+    0 13px 26px rgba(69,46,25,.20),
+    0 28px 45px rgba(69,46,25,.09),
+    inset 0 2px 0 rgba(255,245,220,.65);
 }
-.shelf {
-  position: relative; display: flex; flex-direction: column; gap: 10px; padding: 14px;
-  border-radius: 16px; background: linear-gradient(180deg, #f4e7d3, #e4cfae);
-  border: 1px solid rgba(120, 90, 50, 0.25);
-  box-shadow: 0 18px 34px rgba(60, 40, 15, 0.25), inset 0 0 0 4px rgba(255, 255, 255, 0.35);
-  transform-style: preserve-3d;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.2s;
-  min-height: 430px;
-}
-.shelf--batteries { transform: rotateY(14deg) translateZ(0); transform-origin: right center; }
-.shelf--textiles { transform: rotateY(8deg); transform-origin: right center; }
-.shelf--electronics { transform: translateZ(24px); }
-.shelf--furniture { transform: rotateY(-8deg); transform-origin: left center; }
-.shelf--tires { transform: rotateY(-14deg); transform-origin: left center; }
-.shelf--active { cursor: pointer; outline: 3px solid var(--blue); outline-offset: 3px; background: linear-gradient(180deg, #fbf3e4, #ecd9b8); }
-.shelf--active:hover, .shelf--active:focus-visible { transform: rotateY(0deg) translateZ(30px) scale(1.03); box-shadow: 0 28px 48px rgba(37, 99, 235, 0.3); }
-.shelf--disabled { cursor: not-allowed; filter: saturate(0.75); }
-.shelf--dim { opacity: 0.35; }
-.shelf__top { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(255, 255, 255, 0.92); border-radius: 12px; }
-.shelf__top > :last-child { margin-left: auto; color: var(--muted); }
-.shelf__top h2 { font-size: 18px; margin-bottom: 4px; }
-.shelf__icon { flex: none; color: var(--navy); }
-.shelf__scene { flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px; }
-.shelf__scene svg { width: 100%; max-height: 210px; filter: drop-shadow(0 10px 8px rgba(40, 25, 5, 0.3)); }
-.shelf__text { background: rgba(255, 255, 255, 0.92); border-radius: 12px; padding: 12px; font-size: 14px; color: #2c3a58; min-height: 64px; }
 
-.info-bar { display: grid; grid-template-columns: 1.6fr 1fr 0.8fr; background: rgba(255, 255, 255, 0.92); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
-.info-bar__item { display: flex; gap: 12px; padding: 16px 20px; align-items: flex-start; }
-.info-bar__item + .info-bar__item { border-left: 1px solid var(--line); }
-.info-bar__item p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.shelves::before,
+.shelves::after {
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  z-index: 4;
+  pointer-events: none;
+  content: '';
+}
+
+.shelves::before {
+  top: 0;
+  height: 7px;
+  background: linear-gradient(#e3c59c, #b78c5e 74%, #91683e);
+  box-shadow: 0 3px 7px rgba(59,39,19,.2);
+}
+
+.shelves::after {
+  bottom: -7px;
+  height: 10px;
+  background: linear-gradient(#d5b085, #a87948);
+  box-shadow: 0 7px 12px rgba(59,39,19,.16);
+}
+
+/* 4. EINZELNE NISCHE ------------------------------------------------------- */
+.shelf {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  height: clamp(415px, 51vh, 515px);
+  height: clamp(415px, 51dvh, 515px);
+  min-height: 0;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(99,69,36,.18);
+  border-radius: 2px;
+  color: var(--room-ink);
+  text-decoration: none;
+  background:
+    radial-gradient(ellipse at 50% 32%, #fff0d3 0%, transparent 82%),
+    linear-gradient(90deg, #c4a47a, #eed4ac 12%, #e5c59b 88%, #c2a077);
+  box-shadow:
+    inset 7px 0 13px -8px rgba(60,37,14,.55),
+    inset -7px 0 13px -8px rgba(60,37,14,.55),
+    inset 0 15px 16px -13px rgba(74,43,17,.45);
+  transform: none;
+  transition: box-shadow .2s ease, opacity .2s ease;
+}
+
+/* Alte rotateY-Positionierungen bewusst neutralisieren. */
+.shelf--batteries,
+.shelf--textiles,
+.shelf--electronics,
+.shelf--furniture,
+.shelf--tires { transform: none; }
+
+.shelf::before {
+  position: absolute;
+  z-index: 2;
+  top: 7px;
+  right: 5%;
+  left: 5%;
+  height: 6px;
+  border-radius: 100%;
+  background: rgba(255,232,172,.82);
+  box-shadow: 0 10px 22px 11px rgba(255,213,135,.35);
+  filter: blur(4px);
+  pointer-events: none;
+  content: '';
+}
+
+.shelf--active { cursor: pointer; }
+.shelf--active::after {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  border: 3px solid var(--room-blue);
+  box-shadow: inset 0 0 14px rgba(35,120,255,.12);
+  pointer-events: none;
+  content: '';
+}
+
+.shelf--active:hover,
+.shelf--active:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(35,120,255,.33), inset 0 0 22px rgba(35,120,255,.08);
+}
+
+.shelf--disabled { cursor: default; }
+.shelf--dim { opacity: .28; }
+
+/* 5. WEISSE PRODUKTBESCHRIFTUNG ------------------------------------------ */
+.shelf__top {
+  position: absolute;
+  z-index: 3;
+  top: 10px;
+  right: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, .7vw, 11px);
+  min-width: 0;
+  min-height: 74px;
+  padding: 10px clamp(8px, .85vw, 13px);
+  border-radius: 8px;
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 4px 12px rgba(72,48,25,.13);
+}
+
+.shelf__top > div { flex: 1 1 auto; min-width: 0; }
+.shelf__top > :last-child { flex: none; margin-left: auto; color: #65758b; }
+.shelf__icon { display: flex; align-items: center; flex: none; color: var(--room-ink); }
+.shelf__top h2 {
+  margin: 0 0 4px;
+  font-size: clamp(15px, 1vw, 18px);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+}
+.shelf__top .badge {
+  max-width: 100%;
+  font-size: 11px;
+  padding: 2px 7px;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* 6. FOTO-NISCHE: ABSOLUTE GROESSE STATT NATUERLICHER BILDBREITE --------- */
+.shelf__scene {
+  position: absolute;
+  z-index: 1;
+  top: 91px;
+  right: 8px;
+  bottom: 88px;
+  left: 8px;
+  display: block;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #d9b58c;
+  box-shadow: inset 0 8px 12px rgba(64,41,20,.10), inset 0 -8px 12px rgba(64,41,20,.1);
+}
+
+/* Bei Fotos kein zusaetzliches CSS-Podest: es ist bereits im Bild enthalten. */
+.shelf__scene::before,
+.shelf__scene::after { content: none; }
+
+.shelf__scene .showroom-product-image,
+.shelf__scene > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  object-fit: cover;
+  object-position: center;
+  filter: none;
+  transform: none;
+  transition: transform .25s ease;
+}
+
+/* Leichte, produktspezifische Bildausrichtung. */
+.shelf--batteries .showroom-product-image { object-position: 54% center; }
+.shelf--textiles .showroom-product-image { object-position: 50% center; }
+.shelf--electronics .showroom-product-image { object-position: 50% center; }
+.shelf--furniture .showroom-product-image { object-position: 50% center; }
+.shelf--tires .showroom-product-image { object-position: 56% center; }
+
+.shelf--active:hover .showroom-product-image,
+.shelf--active:focus-visible .showroom-product-image {
+  transform: scale(1.025);
+}
+
+/* Optionaler SVG-Fallback, falls Illustration spaeter wieder SVG verwendet. */
+.shelf__scene svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* 7. INFO-TEXT AM REGALFUSS ---------------------------------------------- */
+.shelf__text {
+  position: absolute;
+  z-index: 3;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 71px;
+  max-height: 80px;
+  margin: 0;
+  padding: 9px 11px;
+  overflow: hidden;
+  border: 1px solid rgba(55,66,80,.07);
+  border-radius: 8px;
+  color: #2d3b54;
+  background: rgba(255,255,255,.97);
+  font-size: clamp(11px, .84vw, 14px);
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  box-shadow: 0 4px 8px rgba(70,44,18,.08);
+}
+
+/* 8. UNTERE INFORMATIONSLEISTE ------------------------------------------- */
+.info-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, .72fr);
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(61,70,83,.12);
+  border-radius: 12px;
+  background: rgba(255,255,255,.94);
+  box-shadow: 0 10px 26px rgba(77,52,27,.1);
+}
+
+.info-bar__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 15px 16px;
+}
+.info-bar__item > div { min-width: 0; }
+.info-bar__item + .info-bar__item { border-left: 1px solid rgba(53,67,85,.12); }
+.info-bar__item strong { font-size: 13px; line-height: 1.3; }
+.info-bar__item p {
+  margin-top: 4px;
+  color: #52637e;
+  font-size: 12px;
+  line-height: 1.38;
+  overflow-wrap: break-word;
+}
+.info-bar__item .tile__icon { flex: 0 0 36px; width: 36px; height: 36px; }
+
+/* 9. RESPONSIVE: STETS EINE REIHE MIT FÜNF PRODUKTGRUPPEN -------------- */
+/* WICHTIG: Keine Media Query stellt die Regalwand auf 1/2/3 Spalten um.
+   Auf schmalen Fenstern ist die Regalwand innerhalb ihrer Breite scrollbar.
+   Dadurch stehen Produkte nie untereinander – auch nicht in VS Code Preview. */
+.room .shelves {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(185px, 1fr)) !important;
+}
 
 @media (max-width: 1100px) {
-  .shelves { grid-template-columns: repeat(3, 1fr); perspective: none; transform: none; }
-  .shelf, .shelf--batteries, .shelf--textiles, .shelf--electronics, .shelf--furniture, .shelf--tires { transform: none; min-height: 0; }
-  .shelf--active:hover, .shelf--active:focus-visible { transform: translateY(-4px); }
-  .info-bar { grid-template-columns: 1fr; }
-  .info-bar__item + .info-bar__item { border-left: 0; border-top: 1px solid var(--line); }
+  .room__content { padding-inline: 15px; }
+  .shelf { height: 445px; }
+  .shelf__text { font-size: 12px; }
+  .info-bar { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .info-bar__item:last-child {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid rgba(53,67,85,.12);
+  }
 }
-@media (max-width: 700px) {
-  .shelves { grid-template-columns: 1fr 1fr; }
-  .room__content { padding: 18px 14px; }
-  .room__head h1 { font-size: 24px; }
-  .search { min-width: 0; width: 100%; }
+
+@media (max-width: 780px) {
+  .room__head { align-items: flex-start; }
+  .room .search { flex-basis: 100%; width: 100%; }
+  .info-bar { grid-template-columns: minmax(0, 1fr); }
+  .info-bar__item + .info-bar__item,
+  .info-bar__item:last-child {
+    grid-column: auto;
+    border-left: 0;
+    border-top: 1px solid rgba(53,67,85,.12);
+  }
 }
-@media (max-width: 480px) {
-  .shelves { grid-template-columns: 1fr; }
+
+@media (max-width: 520px) {
+  .room__content { padding: 16px 10px 28px; }
+  .room__head h1 { font-size: 25px; }
+  .shelf { height: 435px; }
+  .shelf__top h2 { font-size: 16px; }
+  .shelf__text { font-size: 12px; }
 }
+
+/* 10. BARRIEREFREIHEIT UND MOTION ---------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-  .room__wall, .room__slats, .room__floor, .shelves { transform: none !important; }
-  .shelf--active:hover, .shelf--active:focus-visible { transform: none; }
+  .room .shelf,
+  .room .showroom-product-image { transition: none !important; }
+  .room .shelf--active:hover .showroom-product-image,
+  .room .shelf--active:focus-visible .showroom-product-image { transform: none; }
 }

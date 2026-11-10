@@ -3,7 +3,7 @@
 **Route:** `/products/:productId/customer` (eingeloggter Perspektivenwechsel)  
 **Öffentlicher Einstieg:** `/p/:publicToken` → **dieselbe Endkunden-Content-Komponente** mit Public-Policy, keine sechste Fachseite  
 **Bildreferenz:** [`../assets/03_endkunde.png`](../assets/03_endkunde.png)  
-**Layout:** gemeinsamer OEM-Header/Sidebar aus [`../README.md`](../README.md), nicht die eigenständige Shell des Endkunden-Screenshots.
+**Layout:** gemeinsamer OEM-Header/Sidebar aus [`CLAUDE.md`](../../CLAUDE.md), nicht die eigenständige Shell des Endkunden-Screenshots.
 
 ## 1. Zweck
 

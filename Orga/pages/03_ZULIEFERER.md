@@ -2,7 +2,7 @@
 
 **Route:** `/products/:productId/supplier` · optional `?partyId=<id>`  
 **Bildreferenz:** [`../assets/04_zulieferer.png`](../assets/04_zulieferer.png)  
-**Layout:** gemeinsamer OEM-Header/Sidebar aus [`../README.md`](../README.md); die lieferantenspezifische Navigation aus dem Referenzbild wird als **Seitenanker**, nicht als zweite Sidebar implementiert.
+**Layout:** gemeinsamer OEM-Header/Sidebar aus [`CLAUDE.md`](../../CLAUDE.md); die lieferantenspezifische Navigation aus dem Referenzbild wird als **Seitenanker**, nicht als zweite Sidebar implementiert.
 
 ## 1. Zweck und Identitätslogik
 

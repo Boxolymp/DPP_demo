@@ -2,7 +2,7 @@
 
 **Route:** `/products/:productId/aftersales` · optional `?serialId=...&useCase=...`  
 **Bildreferenz:** [`../assets/06_aftersales.png`](../assets/06_aftersales.png)  
-**Layout:** gemeinsamer OEM-Header/Sidebar, siehe [`../README.md`](../README.md). Die Showroom-Gestaltung mit Fahrzeug, Batterie und Engineering-Station ist **Seitencanvas**, nicht eine eigene App-Navigation.
+**Layout:** gemeinsamer OEM-Header/Sidebar, siehe [`CLAUDE.md`](../../CLAUDE.md). Die Showroom-Gestaltung mit Fahrzeug, Batterie und Engineering-Station ist **Seitencanvas**, nicht eine eigene App-Navigation.
 
 ## 1. Zweck und Leitidee
 

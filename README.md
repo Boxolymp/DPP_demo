@@ -12,7 +12,8 @@ npm run build      # Typprüfung + Produktions-Build
 
 ## Struktur
 
-- `Orga/` – Spezifikation (`Demoaufbau.md`, `README.md`), Seitenbeschreibungen in `pages/`, Referenzbilder in `assets/`
+- `CLAUDE.md` – verbindliche Projektsteuerung: Phasen, Tech-Stack und Begründung, Shell/Routen, Datenmodell, Green Coding, Quality Gates
+- `Orga/` – Seitenbeschreibungen in `pages/`, Referenzbilder in `assets/`, Serverstart-Anleitung
 - `frontend/src/lib/pages.ts` – einzige Quelle der Fachseiten (Routen, Navigation, Verknüpfungen)
 - `frontend/src/content/` – Inhaltsschicht mit Beispieldaten (Phase 1); Zugriff nur über die Hooks in `hooks/useContent.ts`, damit in Phase 2 die API-Anbindung an einer Stelle ersetzt werden kann
 - `frontend/src/features/` – eine Seite je Ansicht, `components/` – gemeinsame UI-Bausteine

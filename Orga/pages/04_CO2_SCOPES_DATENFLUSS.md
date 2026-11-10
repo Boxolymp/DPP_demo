@@ -2,7 +2,7 @@
 
 **Route:** `/products/:productId/footprint` · Filter optional `?stage=...&nodeId=...&mode=scopes|pcf`  
 **Bildreferenz:** [`../assets/05_co2_scopes.png`](../assets/05_co2_scopes.png)  
-**Layout:** Das dunkle, immersive Prozessbild ist **nur Seitengestaltung innerhalb** der gemeinsamen OEM-basierten Shell. Der eigenständige dunkle Header und die Sidebar der Referenz **werden nicht als zweite AppShell nachgebaut**. Siehe [`../README.md`](../README.md).
+**Layout:** Das dunkle, immersive Prozessbild ist **nur Seitengestaltung innerhalb** der gemeinsamen OEM-basierten Shell. Der eigenständige dunkle Header und die Sidebar der Referenz **werden nicht als zweite AppShell nachgebaut**. Siehe [`CLAUDE.md`](../../CLAUDE.md).
 
 ## 1. Zweck und fachliche Leitplanken
 

@@ -2,7 +2,7 @@
 
 **Route:** `/products/:productId/oem`  
 **Bildreferenz:** [`../assets/02_oem.png`](../assets/02_oem.png)  
-**Layout:** `<AppShell>` (Header + Sidebar **ausschließlich** aus der OEM-Referenz, siehe [`../README.md`](../README.md)). Die hier beschriebenen Komponenten ersetzen nur `<RouteOutlet>`.
+**Layout:** `<AppShell>` (Header + Sidebar **ausschließlich** aus der OEM-Referenz, siehe [`CLAUDE.md`](../../CLAUDE.md)). Die hier beschriebenen Komponenten ersetzen nur `<RouteOutlet>`.
 
 ## 1. Zweck und Nutzerwert
 
