@@ -1,39 +1,34 @@
 /* ============================================================================
-   DATACIDERS DPP SHOWROOM — RESPONSIVE REGALWAND
-   Vollstaendiger Ersatz fuer src/styles/showroom.css.
+   DATACIDERS DPP-SHOWROOM — 2.5D-REGALWAND
+   Ersetzt die rudimentaere Fassung. Kompatibel mit ShowroomPage.tsx und
+   Illustrations.tsx (unveraendert). Bilder: public/images/showroom/*.webp.
 
-   Kompatibel mit der bestehenden ShowroomPage.tsx und Illustrations.tsx.
-   Verwendet die vorhandenen Bilder unter:
-   public/images/showroom/{batteries,textiles,electronics,furniture,tires}.webp
-
-   base.css muss NICHT veraendert werden.
-
-   Ziele:
-   - Alle 5 Produktgruppen auf normalen Desktopmonitoren vollstaendig sichtbar
-   - Keine horizontale Ueberbreite durch Grid-, Bild- oder Text-Mindestgroessen
-   - Gleich hohe Regalnischen mit flaechenfuellenden WebP-Fotos
-   - Auf Desktop genau 5 Spalten, auf schmalen Fenstern horizontal scrollbar
-   - Kein Umbruch der Produktgruppen untereinander
+   2.5D-Prinzip (vgl. CLAUDE.md): Tiefe entsteht aus geschichteten
+   Hintergrundebenen (Wand, Lamellen, Boden, Licht) mit leichtem Parallax,
+   nicht aus aufgefaecherten 3D-Karten. Animation nur ueber transform/opacity.
+   Bei prefers-reduced-motion entfaellt der Parallax ohne Funktionsverlust.
+   Die Parallax-Staerke steuert ShowroomPage.tsx ueber --px/--py (Bereich -1..1).
    ============================================================================ */
 
-/* 1. RAUM UND HINTERGRUND -------------------------------------------------- */
+/* 1. RAUM + GESCHICHTETE KULISSE ----------------------------------------- */
 .room {
   --px: 0;
   --py: 0;
   --room-ink: #152941;
   --room-blue: #2378ff;
-  --room-wood-dark: #92704c;
-  --room-wood-light: #cfad80;
+  --room-wood-dark: #8f683f;
+  --room-wood-mid: #bd9261;
+  --room-wood-light: #e3c59c;
 
   position: relative;
   isolation: isolate;
   width: 100%;
   min-width: 0;
-  min-height: calc(100vh - var(--topbar-h, 56px));
-  min-height: calc(100dvh - var(--topbar-h, 56px));
+  min-height: calc(100vh - var(--topbar-h, 60px));
+  min-height: calc(100dvh - var(--topbar-h, 60px));
   overflow: hidden;
   color: var(--room-ink);
-  background: #eee4d6;
+  background: #e9ded0;
 }
 
 .room__wall,
@@ -43,98 +38,168 @@
   position: absolute;
   z-index: -1;
   pointer-events: none;
+  will-change: transform;
 }
 
+/* Helle Rueckwand, warmes Deckenlicht von links oben. */
 .room__wall {
-  inset: 0 0 31%;
+  inset: -4% -4% 29% -4%;
   background:
-    radial-gradient(ellipse 85% 80% at 22% 10%, rgba(255,255,255,.75), transparent 75%),
-    linear-gradient(112deg, #f8f4ec 0%, #f0e6d9 62%, #e0d0bf 100%);
+    radial-gradient(ellipse 80% 78% at 24% 8%, rgba(255, 255, 255, .85), transparent 76%),
+    linear-gradient(112deg, #f8f4ec 0%, #f0e6d9 60%, #ddcdba 100%);
+  transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -4px), 0);
 }
 
+/* Vertikale Holzlamellen rechts im Hintergrund (wie in der Referenz). */
 .room__slats {
-  inset: 3% 0 51% 33%;
+  inset: -2% -4% 48% 46%;
   background:
     repeating-linear-gradient(90deg,
-      rgba(100,68,34,.18) 0 2px,
-      #d5b993 3px 11px,
-      #c29d73 12px 14px,
-      #e0c7a6 15px 22px);
-  opacity: .72;
-  box-shadow: inset 45px 0 40px rgba(246,239,228,.4);
+      rgba(96, 64, 31, .20) 0 2px,
+      #d5b993 3px 12px,
+      #bf9a6f 13px 15px,
+      #e2c9a8 16px 23px),
+    linear-gradient(#c9a67d, #b2895c);
+  opacity: .7;
+  box-shadow: inset 50px 0 44px rgba(246, 239, 228, .45);
+  transform: translate3d(calc(var(--px) * -11px), 0, 0);
 }
 
+/* Heller Steinboden mit weichem Kontaktschatten unter der Regalwand. */
 .room__floor {
-  inset: 69% 0 0;
+  inset: 70% -4% -4% -4%;
   background:
-    linear-gradient(180deg, rgba(125,93,56,.16), transparent 16%),
-    linear-gradient(180deg, #e5d3b9, #cdb391);
+    linear-gradient(180deg, rgba(120, 89, 54, .18), transparent 15%),
+    linear-gradient(180deg, #ead3bf, #f3dcc7);
+  transform: translate3d(calc(var(--px) * 5px), calc(var(--py) * 3px), 0);
 }
 
+/* Zentrale Lichtstimmung ueber der gesamten Szene. */
 .room__glow {
   inset: 0;
   background:
-    radial-gradient(ellipse 65% 43% at 45% 17%, rgba(255,255,255,.40), transparent 80%),
-    radial-gradient(ellipse 85% 18% at 50% 83%, rgba(90,61,31,.08), transparent 75%);
+    radial-gradient(ellipse 64% 42% at 45% 15%, rgba(255, 248, 228, .55), transparent 80%),
+    radial-gradient(ellipse 86% 20% at 50% 84%, rgba(88, 59, 29, .09), transparent 74%);
 }
 
-/* 2. CONTENT-RAHMEN: BREITE IST IMMER AUF DEN VIEWPORT BEGRENZT ----------- */
+/* 1b. RAND- UND VORDERGRUNDELEMENTE (Decke, Pflanzen, Moebel) ------------ */
+/* Freigestellte Ausschnitte aus 01_showroom.png. Groessen in vw bezogen auf
+   die 1536 px breite Referenz (1 Referenz-px = 100vw / 1536), damit Decke,
+   Randpflanzen und Bodenband im Massstab des Referenzbildes zueinander passen. */
+
+/* Holzdecke mit Spots oben rechts (Referenz x 820-1536, y 74-120). */
+.room__ceiling {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  width: calc(100vw * 716 / 1536);
+  height: auto;
+  pointer-events: none;
+}
+
+/* Warmer Lichtkegel unter dem Deckenspot, faellt auf die Lamellenwand. */
+.room__lights {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: -1;
+  height: 62%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 7% 72% at 82.8% 2%, rgba(255, 220, 158, .6), transparent 72%),
+    radial-gradient(ellipse 20% 56% at 84% 0%, rgba(255, 229, 180, .38), transparent 75%);
+}
+
+/* Pflanzenstreifen am Bildrand (Referenz x 0-38, y 76-820), hinter dem
+   Content (z 0). Unterkante wie in der Referenz auf dem Bodenband. */
+.room__plant {
+  position: absolute;
+  z-index: 0;
+  bottom: calc(100vw * 204 / 1536);
+  width: calc(100vw * 38 / 1536);
+  height: auto;
+  pointer-events: none;
+  will-change: transform;
+  transform: translate3d(calc(var(--px) * 6px), calc(var(--py) * 3px), 0);
+}
+.room__plant--left { left: -6px; }
+.room__plant--right { right: -6px; }
+
+/* Unscharfes Bodenband (Referenz y 780-1024): Pflanze links, Holztische,
+   graues Sofa rechts. Liegt hinter den UI-Karten (z 0); ein Loch im
+   Alpha-Kanal gibt den Platz der Info-Leiste frei. scale() deckt die
+   Raender beim Parallax ab. */
+.room__fg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  will-change: transform;
+  transform-origin: bottom center;
+  transform: translate3d(calc(var(--px) * 6px), calc(var(--py) * 3px), 0) scale(1.012);
+}
+
+/* 2. CONTENT-RAHMEN ------------------------------------------------------- */
+/* Seitenabstand wie in der Referenz (~3 %): Regalwand fast randbreit,
+   schmaler Rand fuer die Pflanzenstreifen. */
 .room__content {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 1.5vw, 20px);
+  gap: clamp(14px, 1.6vw, 24px);
   width: 100%;
-  max-width: 1720px;
+  max-width: 2400px;
   min-width: 0;
   margin-inline: auto;
-  padding: clamp(18px, 2vw, 30px) clamp(16px, 2.2vw, 36px) 34px;
+  padding: clamp(18px, 2vw, 32px) clamp(16px, 3vw, 64px) 36px;
 }
 
 .room__head {
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 14px 26px;
+  gap: 16px 28px;
   min-width: 0;
 }
 
-.room__head > div {
-  flex: 1 1 480px;
-  min-width: 0;
-}
+.room__head > div { flex: 1 1 480px; min-width: 0; }
 
 .room__head h1 {
   margin: 0;
   color: var(--room-ink);
-  font-size: clamp(25px, 2.2vw, 36px);
+  font-size: clamp(26px, 2.2vw, 36px);
   line-height: 1.1;
   letter-spacing: -.035em;
+  font-weight: 760;
 }
 
 .room__head p {
-  max-width: 700px;
+  max-width: 710px;
   margin-top: 9px;
   color: #3e4c62;
-  font-size: clamp(13px, .98vw, 16px);
+  font-size: clamp(14px, 1vw, 16px);
   line-height: 1.45;
 }
 
 .room .search {
   display: flex;
-  flex: 0 1 315px;
+  flex: 0 1 330px;
   align-items: center;
-  gap: 9px;
-  width: min(100%, 315px);
+  gap: 10px;
+  width: min(100%, 350px);
   min-width: 0;
-  padding: 11px 15px;
-  border: 1px solid rgba(39,52,70,.08);
+  padding: 12px 16px;
+  border: 1px solid rgba(39, 52, 70, .08);
   border-radius: 999px;
   color: #66758a;
-  background: rgba(255,255,255,.94);
-  box-shadow: 0 5px 20px rgba(50,35,20,.06);
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 8px 24px rgba(50, 35, 20, .07);
+  backdrop-filter: blur(8px);
 }
 
 .room .search input {
@@ -148,36 +213,34 @@
   font: inherit;
 }
 
-.room .search:focus-within {
-  outline: 2px solid var(--room-blue);
-  outline-offset: 2px;
-}
+.room .search:focus-within { outline: 2px solid var(--room-blue); outline-offset: 2px; }
 
-/* 3. REGALWAND: ENTSCHEIDEND SIND minmax(0,1fr) UND min-width:0 ---------- */
+/* 3. REGALWAND ------------------------------------------------------------ */
+/* Ein durchgehender Holzkorpus; die Nischen teilen sich eine Front.
+   minmax(0,1fr) verhindert, dass die WebP-Bilder die Spalten aufblaehen. */
 .shelves {
   position: relative;
   display: grid;
-  /* Fuenf Spalten IMMER nebeneinander; jede Spalte ist mindestens 185px breit. */
-  grid-template-columns: repeat(5, minmax(185px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: stretch;
   gap: 6px;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  padding: 9px;
-  /* Ein schmales Browser-/VS-Code-Vorschaufenster scrollt statt zu stapeln. */
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: #a67f50 transparent;
-  border: 1px solid rgba(104,73,40,.32);
-  background: linear-gradient(90deg, #aa8155, #d2ac7c 10%, #bd9261 50%, #9b744c);
+  padding: 10px 9px 8px;
+  isolation: isolate;
+  border: 1px solid rgba(97, 67, 36, .4);
+  background: linear-gradient(90deg, #987046, #c7a276 9%, #b38b5d 52%, #8f683f 100%);
   box-shadow:
-    0 13px 26px rgba(69,46,25,.20),
-    0 28px 45px rgba(69,46,25,.09),
-    inset 0 2px 0 rgba(255,245,220,.65);
+    0 20px 26px rgba(62, 41, 21, .22),
+    0 36px 48px rgba(62, 41, 21, .12),
+    inset 0 2px 0 rgba(255, 244, 219, .65);
+  /* Die Regalwand liegt optisch vor den Hintergrundebenen: Gegenparallax. */
+  transform: translate3d(calc(var(--px) * 4px), calc(var(--py) * 2px), 0);
+  transition: transform .18s ease-out;
 }
 
+/* Obere und untere Holzblende des Korpus. */
 .shelves::before,
 .shelves::after {
   position: absolute;
@@ -187,78 +250,80 @@
   pointer-events: none;
   content: '';
 }
-
 .shelves::before {
-  top: 0;
-  height: 7px;
-  background: linear-gradient(#e3c59c, #b78c5e 74%, #91683e);
-  box-shadow: 0 3px 7px rgba(59,39,19,.2);
+  top: -2px;
+  height: 9px;
+  background: linear-gradient(var(--room-wood-light), var(--room-wood-mid) 72%, var(--room-wood-dark));
+  box-shadow: 0 3px 7px rgba(59, 39, 19, .25);
 }
-
 .shelves::after {
-  bottom: -7px;
-  height: 10px;
-  background: linear-gradient(#d5b085, #a87948);
-  box-shadow: 0 7px 12px rgba(59,39,19,.16);
+  bottom: -11px;
+  height: 13px;
+  background: linear-gradient(#d8b28a, #a87948 50%, #805832);
+  box-shadow: 0 8px 15px rgba(59, 39, 19, .2);
 }
 
-/* 4. EINZELNE NISCHE ------------------------------------------------------- */
+/* 4. EINZELNE NISCHE ------------------------------------------------------ */
 .shelf {
   position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
   width: 100%;
-  height: clamp(415px, 51vh, 515px);
-  height: clamp(415px, 51dvh, 515px);
+  height: clamp(415px, 51vh, 510px);
+  height: clamp(415px, 51dvh, 510px);
   min-height: 0;
   gap: 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid rgba(99,69,36,.18);
+  border: 1px solid rgba(99, 69, 36, .2);
   border-radius: 2px;
   color: var(--room-ink);
   text-decoration: none;
+  /* Warmes Innenlicht + seitlich abgedunkelte Nischenwaende = Tiefe. */
   background:
-    radial-gradient(ellipse at 50% 32%, #fff0d3 0%, transparent 82%),
+    radial-gradient(ellipse 92% 82% at 50% 30%, #fff2d6 0%, rgba(255, 236, 200, .5) 60%, transparent 92%),
     linear-gradient(90deg, #c4a47a, #eed4ac 12%, #e5c59b 88%, #c2a077);
   box-shadow:
-    inset 7px 0 13px -8px rgba(60,37,14,.55),
-    inset -7px 0 13px -8px rgba(60,37,14,.55),
-    inset 0 15px 16px -13px rgba(74,43,17,.45);
-  transform: none;
-  transition: box-shadow .2s ease, opacity .2s ease;
+    inset 8px 0 14px -9px rgba(60, 37, 14, .6),
+    inset -8px 0 14px -9px rgba(60, 37, 14, .6),
+    inset 0 15px 15px -13px rgba(74, 43, 17, .48),
+    inset 0 -15px 18px -13px rgba(57, 33, 10, .42);
+  transition: box-shadow .22s ease, opacity .2s ease;
 }
 
-/* Alte rotateY-Positionierungen bewusst neutralisieren. */
+/* Alte rotateY-Auffaecherung der Vorgaengerfassung neutralisieren. */
 .shelf--batteries,
 .shelf--textiles,
 .shelf--electronics,
 .shelf--furniture,
 .shelf--tires { transform: none; }
 
+/* Schmale Lichtkante direkt unter der oberen Holzblende. */
 .shelf::before {
   position: absolute;
   z-index: 2;
   top: 7px;
   right: 5%;
   left: 5%;
-  height: 6px;
+  height: 7px;
   border-radius: 100%;
-  background: rgba(255,232,172,.82);
-  box-shadow: 0 10px 22px 11px rgba(255,213,135,.35);
+  background: rgba(255, 232, 172, .82);
+  box-shadow: 0 10px 22px 11px rgba(255, 213, 135, .35);
   filter: blur(4px);
   pointer-events: none;
   content: '';
 }
 
 .shelf--active { cursor: pointer; }
+
+/* Aktive Produktgruppe: blauer Rahmen (wie Batterien in der Referenz). */
 .shelf--active::after {
   position: absolute;
   z-index: 5;
   inset: 0;
   border: 3px solid var(--room-blue);
-  box-shadow: inset 0 0 14px rgba(35,120,255,.12);
+  box-shadow: inset 0 0 16px rgba(35, 120, 255, .1), 0 0 14px rgba(35, 120, 255, .18);
   pointer-events: none;
   content: '';
 }
@@ -266,36 +331,36 @@
 .shelf--active:hover,
 .shelf--active:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(35,120,255,.33), inset 0 0 22px rgba(35,120,255,.08);
+  box-shadow: 0 0 0 3px rgba(35, 120, 255, .33), inset 0 0 22px rgba(35, 120, 255, .09);
 }
 
 .shelf--disabled { cursor: default; }
-.shelf--dim { opacity: .28; }
+.shelf--dim { opacity: .28; filter: saturate(.6); }
 
-/* 5. WEISSE PRODUKTBESCHRIFTUNG ------------------------------------------ */
+/* 5. WEISSES PRODUKT-SCHILD (oben) --------------------------------------- */
 .shelf__top {
   position: absolute;
   z-index: 3;
-  top: 10px;
-  right: 8px;
-  left: 8px;
+  top: 11px;
+  right: 9px;
+  left: 9px;
   display: flex;
   align-items: center;
-  gap: clamp(6px, .7vw, 11px);
+  gap: clamp(6px, .7vw, 10px);
   min-width: 0;
   min-height: 74px;
-  padding: 10px clamp(8px, .85vw, 13px);
+  padding: 11px clamp(9px, .9vw, 13px);
   border-radius: 8px;
-  background: rgba(255,255,255,.97);
-  box-shadow: 0 4px 12px rgba(72,48,25,.13);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .99), rgba(250, 249, 248, .97));
+  box-shadow: 0 5px 14px rgba(72, 48, 25, .14);
 }
 
 .shelf__top > div { flex: 1 1 auto; min-width: 0; }
 .shelf__top > :last-child { flex: none; margin-left: auto; color: #65758b; }
 .shelf__icon { display: flex; align-items: center; flex: none; color: var(--room-ink); }
 .shelf__top h2 {
-  margin: 0 0 4px;
-  font-size: clamp(15px, 1vw, 18px);
+  margin: 0 0 5px;
+  font-size: clamp(15px, 1vw, 19px);
   line-height: 1.1;
   letter-spacing: -.02em;
   overflow-wrap: anywhere;
@@ -303,32 +368,34 @@
 .shelf__top .badge {
   max-width: 100%;
   font-size: 11px;
-  padding: 2px 7px;
+  padding: 2px 8px;
   white-space: normal;
   line-height: 1.2;
 }
 
-/* 6. FOTO-NISCHE: ABSOLUTE GROESSE STATT NATUERLICHER BILDBREITE --------- */
+/* 6. FOTO-NISCHE ---------------------------------------------------------- */
+/* Absolut positioniert zwischen Schild und Beschreibung, damit die Bilder
+   die Nische flaechig fuellen, ohne die Spaltenbreite zu bestimmen. */
 .shelf__scene {
   position: absolute;
   z-index: 1;
-  top: 91px;
+  top: 94px;
   right: 8px;
-  bottom: 88px;
+  bottom: 86px;
   left: 8px;
   display: block;
   width: auto;
   height: auto;
   min-width: 0;
   min-height: 0;
-  padding: 0;
   margin: 0;
+  padding: 0;
   overflow: hidden;
   background: #d9b58c;
-  box-shadow: inset 0 8px 12px rgba(64,41,20,.10), inset 0 -8px 12px rgba(64,41,20,.1);
+  box-shadow: inset 0 8px 12px rgba(64, 41, 20, .1), inset 0 -8px 12px rgba(64, 41, 20, .12);
 }
 
-/* Bei Fotos kein zusaetzliches CSS-Podest: es ist bereits im Bild enthalten. */
+/* Fotos tragen ihren Hintergrund selbst: kein zusaetzliches CSS-Podest. */
 .shelf__scene::before,
 .shelf__scene::after { content: none; }
 
@@ -347,24 +414,21 @@
   border: 0;
   object-fit: cover;
   object-position: center;
-  filter: none;
   transform: none;
-  transition: transform .25s ease;
+  transition: transform .3s ease;
 }
 
-/* Leichte, produktspezifische Bildausrichtung. */
-.shelf--batteries .showroom-product-image { object-position: 54% center; }
-.shelf--textiles .showroom-product-image { object-position: 50% center; }
-.shelf--electronics .showroom-product-image { object-position: 50% center; }
-.shelf--furniture .showroom-product-image { object-position: 50% center; }
-.shelf--tires .showroom-product-image { object-position: 56% center; }
+/* Produktspezifische Bildausrichtung. */
+.shelf--batteries .showroom-product-image { object-position: 56% 52%; }
+.shelf--textiles .showroom-product-image { object-position: 50% 50%; }
+.shelf--electronics .showroom-product-image { object-position: 50% 48%; }
+.shelf--furniture .showroom-product-image { object-position: 50% 50%; }
+.shelf--tires .showroom-product-image { object-position: 58% 50%; }
 
 .shelf--active:hover .showroom-product-image,
-.shelf--active:focus-visible .showroom-product-image {
-  transform: scale(1.025);
-}
+.shelf--active:focus-visible .showroom-product-image { transform: scale(1.035); }
 
-/* Optionaler SVG-Fallback, falls Illustration spaeter wieder SVG verwendet. */
+/* SVG-Fallback, falls Illustration spaeter wieder SVG liefert. */
 .shelf__scene svg {
   display: block;
   width: 100%;
@@ -374,7 +438,7 @@
   object-fit: contain;
 }
 
-/* 7. INFO-TEXT AM REGALFUSS ---------------------------------------------- */
+/* 7. WEISSE BESCHREIBUNG (unten) ----------------------------------------- */
 .shelf__text {
   position: absolute;
   z-index: 3;
@@ -384,75 +448,97 @@
   display: flex;
   align-items: center;
   min-width: 0;
-  min-height: 71px;
+  min-height: 70px;
   max-height: 80px;
   margin: 0;
-  padding: 9px 11px;
+  padding: 10px 12px;
   overflow: hidden;
-  border: 1px solid rgba(55,66,80,.07);
+  border: 1px solid rgba(55, 66, 80, .07);
   border-radius: 8px;
   color: #2d3b54;
-  background: rgba(255,255,255,.97);
-  font-size: clamp(11px, .84vw, 14px);
-  line-height: 1.35;
+  background: rgba(255, 255, 255, .97);
+  font-size: clamp(12px, .86vw, 14px);
+  line-height: 1.38;
   overflow-wrap: break-word;
-  box-shadow: 0 4px 8px rgba(70,44,18,.08);
+  box-shadow: 0 4px 8px rgba(70, 44, 18, .09);
 }
 
 /* 8. UNTERE INFORMATIONSLEISTE ------------------------------------------- */
+/* Wie in der Referenz links eingerueckt: Platz fuer die Vordergrundpflanze. */
 .info-bar {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, .72fr);
-  width: 100%;
+  margin-left: 13%;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid rgba(61,70,83,.12);
+  border: 1px solid rgba(61, 70, 83, .12);
   border-radius: 12px;
-  background: rgba(255,255,255,.94);
-  box-shadow: 0 10px 26px rgba(77,52,27,.1);
+  background: rgba(255, 255, 255, .93);
+  box-shadow: 0 10px 30px rgba(77, 52, 27, .11);
+  backdrop-filter: blur(9px);
 }
 
 .info-bar__item {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 13px;
   min-width: 0;
-  padding: 15px 16px;
+  padding: 16px 18px;
 }
 .info-bar__item > div { min-width: 0; }
-.info-bar__item + .info-bar__item { border-left: 1px solid rgba(53,67,85,.12); }
-.info-bar__item strong { font-size: 13px; line-height: 1.3; }
+.info-bar__item + .info-bar__item { border-left: 1px solid rgba(53, 67, 85, .12); }
+.info-bar__item strong { font-size: 14px; line-height: 1.3; }
 .info-bar__item p {
   margin-top: 4px;
   color: #52637e;
   font-size: 12px;
-  line-height: 1.38;
+  line-height: 1.42;
   overflow-wrap: break-word;
 }
-.info-bar__item .tile__icon { flex: 0 0 36px; width: 36px; height: 36px; }
+.info-bar__item .tile__icon { flex: 0 0 34px; width: 34px; height: 34px; }
 
-/* 9. RESPONSIVE: STETS EINE REIHE MIT FÜNF PRODUKTGRUPPEN -------------- */
-/* WICHTIG: Keine Media Query stellt die Regalwand auf 1/2/3 Spalten um.
-   Auf schmalen Fenstern ist die Regalwand innerhalb ihrer Breite scrollbar.
-   Dadurch stehen Produkte nie untereinander – auch nicht in VS Code Preview. */
-.room .shelves {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(185px, 1fr)) !important;
-}
+/* 9. RESPONSIVE: SANFTES REFLOW STATT HORIZONTAL-SCROLL ------------------ */
+/* Auf schmaleren Fenstern loest sich der durchgehende Korpus auf; jede
+   Nische bekommt ihren eigenen Holzrahmen und die Spalten reflowen.
+   So steht nie eine unbenutzbare horizontale UI (vgl. Gate G8). */
+@media (max-width: 1160px) {
+  /* Decke und Randpflanzen brauchen die breite Desktop-Komposition. */
+  .room__ceiling,
+  .room__plant { display: none; }
+  .info-bar { margin-left: 0; }
 
-@media (max-width: 1100px) {
-  .room__content { padding-inline: 15px; }
-  .shelf { height: 445px; }
-  .shelf__text { font-size: 12px; }
+  .shelves {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+  .shelves::before,
+  .shelves::after { display: none; }
+  .shelf {
+    height: 450px;
+    border: 7px solid var(--room-wood-mid);
+    border-radius: 8px;
+    box-shadow:
+      0 14px 22px rgba(55, 36, 18, .18),
+      inset 0 10px 10px -10px rgba(0, 0, 0, .4);
+  }
+  .room__content { padding-inline: 16px; }
   .info-bar { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .info-bar__item:last-child {
     grid-column: 1 / -1;
     border-left: 0;
-    border-top: 1px solid rgba(53,67,85,.12);
+    border-top: 1px solid rgba(53, 67, 85, .12);
   }
 }
 
-@media (max-width: 780px) {
+@media (max-width: 760px) {
+  .room__fg,
+  .room__lights { display: none; }
+  .shelves { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .room__head { align-items: flex-start; }
   .room .search { flex-basis: 100%; width: 100%; }
   .info-bar { grid-template-columns: minmax(0, 1fr); }
@@ -460,20 +546,31 @@
   .info-bar__item:last-child {
     grid-column: auto;
     border-left: 0;
-    border-top: 1px solid rgba(53,67,85,.12);
+    border-top: 1px solid rgba(53, 67, 85, .12);
   }
 }
 
 @media (max-width: 520px) {
-  .room__content { padding: 16px 10px 28px; }
-  .room__head h1 { font-size: 25px; }
-  .shelf { height: 435px; }
-  .shelf__top h2 { font-size: 16px; }
-  .shelf__text { font-size: 12px; }
+  .room__content { padding: 16px 12px 28px; }
+  .room__head h1 { font-size: 26px; }
+  .shelves { grid-template-columns: 1fr; gap: 16px; }
+  .shelf { height: 440px; }
+  .shelf__top h2 { font-size: 17px; }
+  .shelf__text { font-size: 13px; }
 }
 
 /* 10. BARRIEREFREIHEIT UND MOTION ---------------------------------------- */
+/* Kein Parallax, keine Hover-Skalierung: ruhige, statische Regalwand. */
 @media (prefers-reduced-motion: reduce) {
+  .room__wall,
+  .room__slats,
+  .room__floor,
+  .room__plant,
+  .room__fg,
+  .shelves {
+    transform: none !important;
+    transition: none;
+  }
   .room .shelf,
   .room .showroom-product-image { transition: none !important; }
   .room .shelf--active:hover .showroom-product-image,

@@ -5,6 +5,7 @@ import { Icon } from '../../components/ui/Icon';
 import { PRODUCT_GROUPS, SHOWROOM_INFO, type ProductGroup } from '../../content/showroom';
 import { productPath } from '../../lib/pages';
 import { Illustration } from './Illustrations';
+import { ShowroomDecor } from './Decor';
 
 function Shelf({ group, dimmed }: { group: ProductGroup; dimmed: boolean }) {
   const inner = (
@@ -62,6 +63,7 @@ export function ShowroomPage() {
       <div className="room__slats" aria-hidden="true" />
       <div className="room__floor" aria-hidden="true" />
       <div className="room__glow" aria-hidden="true" />
+      <ShowroomDecor />
 
       <div className="room__content">
         <div className="room__head">
