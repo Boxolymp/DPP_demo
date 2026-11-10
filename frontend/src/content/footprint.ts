@@ -6,25 +6,23 @@ const c = createContent();
 interface StageRow {
   id: string;
   title: string;
-  icon: IconName;
   summary: string;
   what: string;
   /** Beispielanteile Scope 1–3 in %; nur Phasen mit Beispieldaten haben sie (und ein PCF-Ergebnis). */
   scopes?: [number, number, number];
 }
 const stages: StageRow[] = [
-  { id: 'raw', title: 'Rohstoffe & Vorverarbeitung', icon: 'box', summary: 'Abbau und Aufbereitung der Rohstoffe. Aus OEM-Sicht gehören diese Emissionen zu den vorgelagerten Scope-3-Emissionen.', what: 'Gewinnung und Aufbereitung von Lithium, Nickel, Kobalt und Graphit.' },
-  { id: 'material', title: 'Materialherstellung', icon: 'factory', summary: 'Herstellung der Aktivmaterialien, z. B. Kathoden- und Anodenmaterial.', what: 'Chemische Verarbeitung der Rohstoffe zu Batteriematerialien.' },
-  { id: 'cell', title: 'Zellfertigung', icon: 'battery', summary: 'Herstellung von Batteriezellen. Aus OEM-Sicht sind die Emissionen der Zellfertigung Teil der vorgelagerten Scope-3-Emissionen.', what: 'Herstellung von Batteriezellen', scopes: [12, 34, 54] },
-  { id: 'module', title: 'Modulfertigung', icon: 'gear', summary: 'Zusammenbau der Zellen zu Modulen.', what: 'Montage von Zellen zu Modulen.' },
-  { id: 'pack', title: 'Pack Assembly', icon: 'box', summary: 'Zusammenbau der Module zum fertigen Batteriepack.', what: 'Montage von Modulen zum Pack inklusive Gehäuse und Elektronik.' },
-  { id: 'distribution', title: 'Distribution', icon: 'truck', summary: 'Transporte zwischen Werken und zum Fahrzeughersteller.', what: 'Transport und Lagerung.' },
-  { id: 'use', title: 'Nutzung', icon: 'car', summary: 'Betrieb im Fahrzeug. Die Emissionen hängen vor allem vom Strommix beim Laden ab.', what: 'Laden und Betrieb im Fahrzeug.' },
-  { id: 'eol', title: 'End-of-Life & Recycling', icon: 'recycle', summary: 'Demontage, Recycling und Rückgewinnung von Materialien.', what: 'Demontage und Stoffrückgewinnung.' },
+  { id: 'raw', title: 'Rohstoffe & Vorverarbeitung', summary: 'Abbau und Aufbereitung der Rohstoffe. Aus OEM-Sicht gehören diese Emissionen zu den vorgelagerten Scope-3-Emissionen.', what: 'Gewinnung und Aufbereitung von Lithium, Nickel, Kobalt und Graphit.' },
+  { id: 'material', title: 'Materialherstellung', summary: 'Herstellung der Aktivmaterialien, z. B. Kathoden- und Anodenmaterial.', what: 'Chemische Verarbeitung der Rohstoffe zu Batteriematerialien.' },
+  { id: 'cell', title: 'Zellfertigung', summary: 'Herstellung von Batteriezellen. Aus OEM-Sicht sind die Emissionen der Zellfertigung Teil der vorgelagerten Scope-3-Emissionen.', what: 'Herstellung von Batteriezellen', scopes: [12, 34, 54] },
+  { id: 'module', title: 'Modulfertigung', summary: 'Zusammenbau der Zellen zu Modulen.', what: 'Montage von Zellen zu Modulen.' },
+  { id: 'pack', title: 'Pack Assembly', summary: 'Zusammenbau der Module zum fertigen Batteriepack.', what: 'Montage von Modulen zum Pack inklusive Gehäuse und Elektronik.' },
+  { id: 'distribution', title: 'Distribution', summary: 'Transporte zwischen Werken und zum Fahrzeughersteller.', what: 'Transport und Lagerung.' },
+  { id: 'use', title: 'Nutzung', summary: 'Betrieb im Fahrzeug. Die Emissionen hängen vor allem vom Strommix beim Laden ab.', what: 'Laden und Betrieb im Fahrzeug.' },
+  { id: 'eol', title: 'End-of-Life & Recycling', summary: 'Demontage, Recycling und Rückgewinnung von Materialien.', what: 'Demontage und Stoffrückgewinnung.' },
 ];
 const stageIds = c.group('footprint.stage', stages, (r, id) => ({
   title: r.title,
-  icon: r.icon,
   summary: r.summary,
   fields: [
     fld(`${id}.what`, 'Was passiert hier', r.what),
@@ -95,6 +93,7 @@ c.add('footprint.result', {
     fld('footprint.result.s1', 'davon Scope 1', '3,4', { unit: 'kg', src: 'Berechnungsdienst' }),
     fld('footprint.result.s2', 'davon Scope 2', '9,7', { unit: 'kg', src: 'Berechnungsdienst' }),
     fld('footprint.result.s3', 'davon Scope 3', '15,3', { unit: 'kg', src: 'Berechnungsdienst' }),
+    fld('footprint.result.phase', 'Beitrag zur Lebenszyklusphase', 'Herstellung (Zelle)', { src: 'Regelwerk' }),
   ],
   related: [link('Lifecycle Impact (OEM)', 'oem')],
 });
@@ -113,7 +112,6 @@ export const footprintContent = { fields: c.fields, sections: c.sections };
 export const footprintStages = stages.map((r, i) => ({
   id: stageIds[i],
   title: r.title,
-  icon: r.icon,
   /** Nur Phasen mit Beispieldaten haben ein PCF-Ergebnis. */
   hasResult: r.scopes !== undefined,
 }));
