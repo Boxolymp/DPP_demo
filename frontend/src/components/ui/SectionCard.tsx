@@ -45,26 +45,31 @@ export function FieldMetric({ fieldKey, className = '' }: { fieldKey: string; cl
   );
 }
 
-/** Einfache Überschrift mit Unterzeile für eine Seite. */
+/** Einfache Überschrift mit Unterzeile für eine Seite; `visual` erscheint rechts daneben. */
 export function PageHero({
   title,
   strong,
   subtitle,
   badge,
+  visual,
 }: {
   title: string;
   strong?: string;
   subtitle: string;
   badge?: ReactNode;
+  visual?: ReactNode;
 }) {
   return (
-    <header className="hero">
-      <h1>
-        {title}
-        {strong ? <> – <span>{strong}</span></> : null}
-      </h1>
-      <p>{subtitle}</p>
-      {badge}
+    <header className={`hero ${visual ? 'hero--visual' : ''}`}>
+      <div className="hero__text">
+        <h1>
+          {title}
+          {strong ? <> – <span>{strong}</span></> : null}
+        </h1>
+        <p>{subtitle}</p>
+        {badge}
+      </div>
+      {visual}
     </header>
   );
 }

@@ -1,9 +1,10 @@
 import { useDrawer } from '../../app/providers/DrawerProvider';
 import { BarChart } from '../../components/charts/BarChart';
-import { ArrowChain, ChainNode } from '../../components/ui/Chain';
+import { ArrowChain } from '../../components/ui/Chain';
 import { Badge, DataValue, FieldBadge } from '../../components/ui/DataValue';
-import { FieldMetric, PageHero, SectionCard, SectionTitle } from '../../components/ui/SectionCard';
-import { FieldList, Tile } from '../../components/ui/Tile';
+import { Icon, type IconName } from '../../components/ui/Icon';
+import { PageHero, SectionCard, SectionTitle } from '../../components/ui/SectionCard';
+import { FieldList } from '../../components/ui/Tile';
 import {
   supplierChainIds,
   supplierComplianceIds,
@@ -11,6 +12,38 @@ import {
   supplierShipmentIds,
 } from '../../content/supplier';
 import { useField, useSection } from '../../hooks/useContent';
+import type { Tone } from '../../types/content';
+
+/** Bildebenen liegen unter public/images/supplier/<letztes Segment der Sektions-ID>.webp. */
+const imageOf = (id: string) => `/images/supplier/${id.split('.').pop()}.webp`;
+
+function HeroVisual() {
+  return (
+    <div className="supplier-hero">
+      <img src="/images/supplier/hero.webp" alt="" width="592" height="112" />
+      <p>Gemeinsam für eine nachhaltige Batteriezukunft.</p>
+    </div>
+  );
+}
+
+function ChainPhotoNode({ id }: { id: string }) {
+  const s = useSection(id);
+  return (
+    <SectionCard id={id} className="photo-node">
+      <img className="photo-node__img" src={imageOf(id)} alt="" loading="lazy" />
+      <span className="photo-node__label">{s.title}</span>
+    </SectionCard>
+  );
+}
+
+function Neighbor({ label, image }: { label: string; image: string }) {
+  return (
+    <div className="neighbor" aria-hidden="true">
+      <span>{label}</span>
+      <img src={`/images/supplier/${image}.webp`} alt="" loading="lazy" />
+    </div>
+  );
+}
 
 function ComplianceCard({ id }: { id: string }) {
   const s = useSection(id);
@@ -19,92 +52,154 @@ function ComplianceCard({ id }: { id: string }) {
   return (
     <SectionCard id={id} className="compliance">
       <div className="compliance__head">
-        <strong>{s.title}</strong>
+        <span className={`compliance__icon compliance__icon--${id.split('.').pop()}`}>
+          <Icon name={s.icon ?? 'doc'} size={18} />
+        </span>
+        <span className="compliance__title">
+          <strong>{s.title}</strong>
+          <span>{s.subtitle}</span>
+        </span>
         <FieldBadge fieldKey={`${id}.status`} />
       </div>
-      <p className="muted small">{s.subtitle}</p>
-      <div className="progress" aria-hidden="true">
-        <span className={`progress__fill progress__fill--${cov.tone ?? 'neutral'}`} style={{ width: `${pct}%` }} />
+      <div className="compliance__bar">
+        <span className="progress" aria-hidden="true">
+          <span className={`progress__fill progress__fill--${cov.tone ?? 'neutral'}`} style={{ width: `${pct}%` }} />
+        </span>
+        <strong className="small"><DataValue fieldKey={`${id}.coverage`} /></strong>
       </div>
-      <p className="small"><DataValue fieldKey={`${id}.coverage`} /></p>
+      <p className="compliance__updated">
+        Letztes Update: <DataValue fieldKey={`${id}.updated`} />
+      </p>
     </SectionCard>
   );
 }
 
 function EvidenceRow({ id }: { id: string }) {
+  const s = useSection(id);
   const { openSection } = useDrawer();
   return (
     <tr>
       <td>
-        <button type="button" className="link-btn" onClick={() => openSection(id)}>
+        <span className="evidence__doc">
+          <Icon name="doc" size={16} />
           <DataValue fieldKey={`${id}.doc`} />
+        </span>
+      </td>
+      <td className="muted"><DataValue fieldKey={`${id}.type`} /></td>
+      <td><FieldBadge fieldKey={`${id}.status`} withIcon /></td>
+      <td><DataValue fieldKey={`${id}.date`} /></td>
+      <td>
+        <button type="button" className="icon-btn" onClick={() => openSection(id)} aria-label={`Details zu ${s.title}`} title="Details">
+          <Icon name="eye" size={18} />
         </button>
       </td>
-      <td><DataValue fieldKey={`${id}.type`} /></td>
-      <td><FieldBadge fieldKey={`${id}.status`} /></td>
-      <td><DataValue fieldKey={`${id}.date`} /></td>
     </tr>
   );
 }
 
+const STEP_ICON: Record<Tone, IconName | null> = { ok: 'check', warn: 'truck', open: 'close', neutral: null };
+
 function ShipmentStep({ id }: { id: string }) {
   const s = useSection(id);
-  const status = useField(`${id}.status`);
+  const tone = useField(`${id}.status`).tone ?? 'neutral';
+  const icon = STEP_ICON[tone];
   return (
-    <SectionCard id={id} className="step">
-      <span className={`step__dot step__dot--${status.tone ?? 'neutral'}`} />
-      <div>
-        <strong>{s.title}</strong>
-        <p className="muted small"><DataValue fieldKey={`${id}.detail`} /></p>
-        <FieldBadge fieldKey={`${id}.status`} />
-      </div>
-    </SectionCard>
+    <li>
+      <SectionCard id={id} className="timeline__item">
+        <span className={`timeline__dot timeline__dot--${tone}`}>{icon ? <Icon name={icon} size={14} /> : null}</span>
+        <span className="timeline__body">
+          <strong>{s.title}</strong>
+          <span className="muted small"><DataValue fieldKey={`${id}.location`} /></span>
+        </span>
+        <span className="timeline__meta">
+          <span className="muted small"><DataValue fieldKey={`${id}.time`} /></span>
+          <FieldBadge fieldKey={`${id}.status`} />
+        </span>
+      </SectionCard>
+    </li>
+  );
+}
+
+function ImpactDelta({ fieldKey }: { fieldKey: string }) {
+  const f = useField(fieldKey);
+  const { openField } = useDrawer();
+  return (
+    <button type="button" className="impact-delta" onClick={() => openField(fieldKey)}>
+      <Icon name="leaf" size={26} />
+      <span className="impact-delta__body">
+        <span className="impact-delta__value"><DataValue fieldKey={fieldKey} /></span>
+        <span className="small">CO₂e · {f.label}</span>
+      </span>
+      <Icon name="chevron" size={18} />
+    </button>
   );
 }
 
 export function SupplierPage() {
+  const { openSection } = useDrawer();
   return (
     <div className="page">
       <PageHero
         title="Zulieferer"
         strong="Mein Beitrag zum Batterie-DPP"
         subtitle="Bereitstellung von Fertigungs-, Transport- und Konformitätsdaten für eine transparente und nachhaltige Batteriewertschöpfung."
+        visual={<HeroVisual />}
       />
 
       <div className="card">
         <SectionTitle>Mein Verantwortungsbereich in der Wertschöpfungskette</SectionTitle>
         <div className="supplier-chain">
-          <div className="neighbor" aria-hidden="true">Rohstofflieferanten</div>
+          <Neighbor label="Rohstofflieferanten" image="raw" />
+          <span className="supplier-chain__arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>
           <div className="responsibility">
-            <Badge tone="ok">Mein Verantwortungsbereich (Zulieferer)</Badge>
-            <ArrowChain ids={supplierChainIds} className="chain chain--linear">
-              {(id) => <ChainNode id={id} />}
+            <Badge tone="ok" icon="check">Mein Verantwortungsbereich (Zulieferer)</Badge>
+            <ArrowChain ids={supplierChainIds} className="photo-chain">
+              {(id) => <ChainPhotoNode id={id} />}
             </ArrowChain>
           </div>
-          <div className="neighbor" aria-hidden="true">OEM Integration</div>
+          <span className="supplier-chain__arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>
+          <Neighbor label="OEM Integration" image="oem" />
         </div>
       </div>
 
       <div className="grid-supplier-mid">
-        <SectionCard id="supplier.contribution" stretch={false}>
+        <SectionCard id="supplier.contribution" stretch={false} className="contribution">
           <div className="card__head">
-            <SectionTitle sub="Aktives Kathodenmaterial für Lithium-Ionen-Batterien">Mein Produktbeitrag</SectionTitle>
-            <Badge tone="ok">Aktiver Beitrag</Badge>
+            <SectionTitle>Mein Produktbeitrag</SectionTitle>
+            <Badge tone="ok" icon="leaf">Aktiver Beitrag</Badge>
           </div>
-          <FieldList
-            keys={[
-              'supplier.material.name',
-              'supplier.material.type',
-              'supplier.material.form',
-              'supplier.material.cas',
-              'supplier.material.internalId',
-              'supplier.material.dppRef',
-            ]}
-          />
+          <div className="contribution__title">
+            <strong><DataValue fieldKey="supplier.material.name" /></strong>
+            <span className="muted"><DataValue fieldKey="supplier.material.description" /></span>
+          </div>
+          <div className="contribution__body">
+            <img className="contribution__img" src={imageOf('material')} alt="" loading="lazy" width="280" height="165" />
+            <FieldList
+              keys={[
+                'supplier.material.type',
+                'supplier.material.form',
+                'supplier.material.cas',
+                'supplier.material.internalId',
+                'supplier.material.dppRef',
+              ]}
+              icons={{
+                'supplier.material.type': 'gear',
+                'supplier.material.form': 'pen',
+                'supplier.material.cas': 'atom',
+                'supplier.material.internalId': 'doc',
+                'supplier.material.dppRef': 'link',
+              }}
+            />
+          </div>
         </SectionCard>
 
         <div className="card">
-          <SectionTitle sub="CCF und PCF sind verschiedene Bilanzen und werden nicht addiert.">Compliance & Nachhaltigkeit</SectionTitle>
+          <div className="card__head">
+            <SectionTitle>Compliance & Nachhaltigkeit</SectionTitle>
+            <button type="button" className="link-btn card__link" onClick={() => openSection('supplier.compliance')}>
+              Details anzeigen <Icon name="arrow" size={14} />
+            </button>
+          </div>
           <div className="grid-tiles grid-tiles--3">
             {supplierComplianceIds.map((id) => (
               <ComplianceCard key={id} id={id} />
@@ -119,7 +214,7 @@ export function SupplierPage() {
           <div className="table-wrap">
             <table className="table">
               <thead>
-                <tr><th>Dokument</th><th>Typ</th><th>Status</th><th>Datum</th></tr>
+                <tr><th>Dokument</th><th>Typ</th><th>Status</th><th>Datum</th><th><span className="sr-only">Aktionen</span></th></tr>
               </thead>
               <tbody>
                 {supplierEvidenceIds.map((id) => (
@@ -132,15 +227,28 @@ export function SupplierPage() {
 
         <div className="card">
           <SectionTitle>Transport & Logistik</SectionTitle>
-          <div className="steps">
-            {supplierShipmentIds.map((id) => (
-              <ShipmentStep key={id} id={id} />
-            ))}
+          <div className="shipment">
+            <ol className="timeline">
+              {supplierShipmentIds.map((id) => (
+                <ShipmentStep key={id} id={id} />
+              ))}
+            </ol>
+            <SectionCard id="supplier.shipment.info" stretch={false} className="shipment__info">
+              <img className="shipment__img" src={imageOf('shipment')} alt="" loading="lazy" width="260" height="68" />
+              <FieldList
+                keys={['supplier.shipment.id', 'supplier.shipment.mass', 'supplier.shipment.mode', 'supplier.shipment.emissions']}
+                icons={{
+                  'supplier.shipment.id': 'link',
+                  'supplier.shipment.mass': 'box',
+                  'supplier.shipment.mode': 'truck',
+                  'supplier.shipment.emissions': 'leaf',
+                }}
+              />
+            </SectionCard>
           </div>
-          <Tile id="supplier.shipment.info" fieldKey="supplier.shipment.id" />
         </div>
 
-        <SectionCard id="supplier.impact" stretch={false}>
+        <SectionCard id="supplier.impact" stretch={false} className="impact">
           <SectionTitle sub="t CO₂e">Impact meines Beitrags</SectionTitle>
           <BarChart
             max={30}
@@ -150,7 +258,7 @@ export function SupplierPage() {
               { fieldKey: 'supplier.impact.transport', label: 'Transport' },
             ]}
           />
-          <FieldMetric fieldKey="supplier.impact.delta" className="metric--accent" />
+          <ImpactDelta fieldKey="supplier.impact.delta" />
         </SectionCard>
       </div>
     </div>

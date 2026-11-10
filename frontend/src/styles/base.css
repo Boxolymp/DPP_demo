@@ -71,9 +71,10 @@ h3 { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 8px;
 .hero h1 { font-size: 30px; letter-spacing: -0.02em; line-height: 1.15; }
 .hero h1 span { font-weight: 600; color: var(--blue); }
 .hero p { color: var(--muted); margin-top: 6px; max-width: 720px; }
+.hero--visual { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 560px); align-items: center; gap: 20px; padding: 0; }
 .hero--split { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
 
-.badge { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
 .badge--ok { background: var(--green-soft); color: var(--green); border-color: #bfe8d2; }
 .badge--warn { background: var(--warn-soft); color: var(--warn); border-color: #f3dcae; }
 .badge--open { background: var(--open-soft); color: var(--open); border-color: #f6c5c8; }
@@ -120,7 +121,8 @@ h3 { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 8px;
 .fieldlist__row, .fieldlist__static { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 9px 4px; background: none; border: 0; text-align: left; position: relative; z-index: 1; }
 .fieldlist__static { display: flex; }
 .fieldlist__row:hover { background: var(--blue-soft); border-radius: 6px; }
-.fieldlist__label { color: var(--muted); font-size: 14px; }
+.fieldlist__label { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; }
+.fieldlist__label svg { flex: none; color: #7184a3; }
 .fieldlist__value { font-weight: 600; font-size: 14px; text-align: right; }
 
 /* ---------- Drawer ---------- */

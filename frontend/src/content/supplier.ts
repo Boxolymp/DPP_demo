@@ -24,6 +24,7 @@ c.add('supplier.contribution', {
   summary: 'Der Beitrag des Zulieferers ist über die Stückliste (BOM) mit dem OEM-Produkt verknüpft. Dieselbe Beziehung nutzt der OEM, daher ändert sich ein Wert nur an einer Stelle.',
   fields: [
     fld('supplier.material.name', 'Material', 'Kathodenmaterial NMC622', { src: 'PLM / Lieferant' }),
+    fld('supplier.material.description', 'Beschreibung', 'Aktives Kathodenmaterial für Lithium-Ionen-Batterien', { src: 'PLM / Lieferant' }),
     fld('supplier.material.type', 'Materialtyp', 'Kathodenmaterial (NMC622)', { src: 'PLM / Lieferant' }),
     fld('supplier.material.form', 'Lieferform', 'Pulver', { src: 'Lieferant' }),
     fld('supplier.material.cas', 'CAS-Nr.', 'nicht zutreffend', { src: 'Lieferant' }),
@@ -33,22 +34,31 @@ c.add('supplier.contribution', {
   related: [link('Verwendung im OEM-Produkt', 'oem')],
 });
 
-interface ComplianceRow { id: string; title: string; subtitle: string; summary: string; pct: number; tone: Tone; label: string }
+c.add('supplier.compliance', {
+  title: 'Compliance & Nachhaltigkeit',
+  summary: 'Jede Datenpflicht hat eigene, konfigurierte Prüfungen. Status und Erfüllungsgrad werden daraus berechnet und sagen nichts über eine gesetzliche Gesamtkonformität aus. CCF (Organisation) und PCF (Produkt) sind verschiedene Bilanzen und werden nicht addiert.',
+  fields: [],
+  related: [link('CO₂ & Scopes', 'footprint')],
+});
+
+interface ComplianceRow { id: string; title: string; subtitle: string; icon: IconName; summary: string; pct: number; tone: Tone; label: string; updated: string }
 const compliance: ComplianceRow[] = [
-  { id: 'ccf', title: 'CCF', subtitle: 'Corporate Carbon Footprint', summary: 'Der organisationsbezogene CO₂-Fußabdruck des Lieferanten. Er wird nicht mit dem Produkt-Fußabdruck addiert.', pct: 100, tone: 'ok', label: 'Vollständig' },
-  { id: 'pcf', title: 'PCF', subtitle: 'Product Carbon Footprint', summary: 'Der produktbezogene, allokierte Emissionsbeitrag des Lieferanten.', pct: 75, tone: 'warn', label: 'In Prüfung' },
-  { id: 'ppwr', title: 'PPWR', subtitle: 'Verpackung & Recycling', summary: 'Verpackungsanforderungen. Geltung und Umfang folgen einem versionierten Regelwerk.', pct: 100, tone: 'ok', label: 'Vollständig' },
-  { id: 'material', title: 'Materialdaten', subtitle: 'Zusammensetzung & Herkunft', summary: 'Stoffliche Zusammensetzung und Herkunft des gelieferten Materials.', pct: 100, tone: 'ok', label: 'Vollständig' },
-  { id: 'transport', title: 'Transportdaten', subtitle: 'Logistik & Emissionen', summary: 'Sendungen und zugehörige Emissionen.', pct: 80, tone: 'warn', label: 'In Prüfung' },
-  { id: 'qualityproof', title: 'Qualitätsnachweise', subtitle: 'Prüfungen & Zertifikate', summary: 'Zertifikate und Prüfberichte mit Gültigkeitszeitraum.', pct: 40, tone: 'open', label: 'Offen' },
+  { id: 'ccf', title: 'CCF', subtitle: 'Corporate Carbon Footprint', icon: 'factory', summary: 'Der organisationsbezogene CO₂-Fußabdruck des Lieferanten. Er wird nicht mit dem Produkt-Fußabdruck addiert.', pct: 100, tone: 'ok', label: 'Vollständig', updated: '12.03.2024' },
+  { id: 'pcf', title: 'PCF', subtitle: 'Product Carbon Footprint', icon: 'battery', summary: 'Der produktbezogene, allokierte Emissionsbeitrag des Lieferanten.', pct: 75, tone: 'warn', label: 'In Prüfung', updated: '08.03.2024' },
+  { id: 'ppwr', title: 'PPWR', subtitle: 'Verpackung & Recycling', icon: 'leaf', summary: 'Verpackungsanforderungen. Geltung und Umfang folgen einem versionierten Regelwerk.', pct: 100, tone: 'ok', label: 'Vollständig', updated: '10.03.2024' },
+  { id: 'material', title: 'Materialdaten', subtitle: 'Zusammensetzung & Herkunft', icon: 'database', summary: 'Stoffliche Zusammensetzung und Herkunft des gelieferten Materials.', pct: 100, tone: 'ok', label: 'Vollständig', updated: '12.03.2024' },
+  { id: 'transport', title: 'Transportdaten', subtitle: 'Logistik & Emissionen', icon: 'truck', summary: 'Sendungen und zugehörige Emissionen.', pct: 80, tone: 'warn', label: 'In Prüfung', updated: '11.03.2024' },
+  { id: 'qualityproof', title: 'Qualitätsnachweise', subtitle: 'Prüfungen & Zertifikate', icon: 'shield', summary: 'Zertifikate und Prüfberichte mit Gültigkeitszeitraum.', pct: 40, tone: 'open', label: 'Offen', updated: '07.03.2024' },
 ];
 export const supplierComplianceIds = c.group('supplier.compliance', compliance, (r, id) => ({
   title: r.title,
   subtitle: r.subtitle,
+  icon: r.icon,
   summary: `${r.summary} 100 % bedeutet nur: Alle für diese Pflicht konfigurierten Prüfungen sind erfüllt, nicht automatisch gesetzliche Konformität.`,
   fields: [
     fld(`${id}.status`, 'Status', r.label, { src: 'Prüfregeln', tone: r.tone }),
     fld(`${id}.coverage`, 'Erfüllungsgrad', r.pct, { unit: '%', src: 'Prüfregeln', tone: r.tone }),
+    fld(`${id}.updated`, 'Letztes Update', r.updated, { src: 'Prüfregeln' }),
   ],
 }));
 
@@ -71,17 +81,18 @@ export const supplierEvidenceIds = c.group('supplier.evidence', evidence, (r, id
   ],
 }));
 
-interface ShipmentRow { id: string; title: string; detail: string; status: string; tone: Tone }
+interface ShipmentRow { id: string; title: string; location: string; time: string; status: string; tone: Tone }
 const shipment: ShipmentRow[] = [
-  { id: 'pickup', title: 'Abholung Werk', detail: 'Leipzig, Deutschland · 12.03.2024, 08:00', status: 'Erledigt', tone: 'ok' },
-  { id: 'transit', title: 'Transport zu OEM', detail: 'München, Deutschland · vsl. 13.03.2024, 14:00', status: 'In Transit', tone: 'warn' },
-  { id: 'handover', title: 'Übergabe an OEM', detail: 'München, Deutschland · vsl. 13.03.2024, 16:00', status: 'Geplant', tone: 'neutral' },
+  { id: 'pickup', title: 'Abholung Werk', location: 'Leipzig, Deutschland', time: '12.03.2024, 08:00', status: 'Erledigt', tone: 'ok' },
+  { id: 'transit', title: 'Transport zu OEM', location: 'München, Deutschland', time: 'vsl. 13.03.2024, 14:00', status: 'In Transit', tone: 'warn' },
+  { id: 'handover', title: 'Übergabe an OEM', location: 'München, Deutschland', time: 'vsl. 13.03.2024, 16:00', status: 'Geplant', tone: 'neutral' },
 ];
 export const supplierShipmentIds = c.group('supplier.shipment', shipment, (r, id) => ({
   title: r.title,
   summary: 'Etappe einer Sendung aus dem Transportmanagementsystem. Etappen ohne zugrunde liegende Sendung werden nie als reale Lieferung gezeigt.',
   fields: [
-    fld(`${id}.detail`, 'Ort und Zeit', r.detail, { src: 'TMS' }),
+    fld(`${id}.location`, 'Ort', r.location, { src: 'TMS' }),
+    fld(`${id}.time`, 'Zeitpunkt', r.time, { src: 'TMS' }),
     fld(`${id}.status`, 'Status', r.status, { src: 'TMS', tone: r.tone }),
   ],
 }));

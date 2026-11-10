@@ -1,5 +1,6 @@
 import { useField } from '../../hooks/useContent';
 import type { DataField, FieldStatus, Tone } from '../../types/content';
+import { Icon, type IconName } from './Icon';
 
 export const STATUS_LABEL: Record<FieldStatus, string> = {
   illustrative: 'Illustrativ',
@@ -31,11 +32,24 @@ export function DataValue({ fieldKey, withUnit = true }: { fieldKey: string; wit
   );
 }
 
-export function Badge({ tone = 'neutral', children }: { tone?: Tone; children: React.ReactNode }) {
-  return <span className={`badge badge--${tone}`}>{children}</span>;
+const TONE_ICON: Partial<Record<Tone, IconName>> = { ok: 'check', warn: 'clock', open: 'close' };
+
+export function Badge({ tone = 'neutral', icon, children }: { tone?: Tone; icon?: IconName; children: React.ReactNode }) {
+  return (
+    <span className={`badge badge--${tone}`}>
+      {icon ? <Icon name={icon} size={13} /> : null}
+      {children}
+    </span>
+  );
 }
 
-export function FieldBadge({ fieldKey }: { fieldKey: string }) {
+/** Statusbadge aus einem Feld; `withIcon` ergänzt ein zum Ton passendes Symbol. */
+export function FieldBadge({ fieldKey, withIcon = false }: { fieldKey: string; withIcon?: boolean }) {
   const f = useField(fieldKey);
-  return <Badge tone={f.tone ?? 'neutral'}>{formatValue(f)}</Badge>;
+  const tone = f.tone ?? 'neutral';
+  return (
+    <Badge tone={tone} icon={withIcon ? TONE_ICON[tone] : undefined}>
+      {formatValue(f)}
+    </Badge>
+  );
 }

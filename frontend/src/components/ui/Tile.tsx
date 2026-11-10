@@ -36,24 +36,27 @@ export function Tile({ id, icon, fieldKey, className = '' }: TileProps) {
   );
 }
 
-/** Liste von Feldern als Zeilen; jede Zeile öffnet das Feld im Drawer. */
-export function FieldList({ keys }: { keys: string[] }) {
+/** Liste von Feldern als Zeilen; jede Zeile öffnet das Feld im Drawer. `icons` ordnet Schlüsseln ein Symbol zu. */
+export function FieldList({ keys, icons }: { keys: string[]; icons?: Record<string, IconName> }) {
   return (
     <ul className="fieldlist">
       {keys.map((k) => (
-        <FieldRowButton key={k} fieldKey={k} />
+        <FieldRowButton key={k} fieldKey={k} icon={icons?.[k]} />
       ))}
     </ul>
   );
 }
 
-function FieldRowButton({ fieldKey }: { fieldKey: string }) {
+function FieldRowButton({ fieldKey, icon }: { fieldKey: string; icon?: IconName }) {
   const f = useField(fieldKey);
   const { openField } = useDrawer();
   return (
     <li>
       <button type="button" className="fieldlist__row" onClick={() => openField(fieldKey)}>
-        <span className="fieldlist__label">{f.label}</span>
+        <span className="fieldlist__label">
+          {icon ? <Icon name={icon} size={16} /> : null}
+          {f.label}
+        </span>
         <span className="fieldlist__value">
           <DataValue fieldKey={fieldKey} />
         </span>
