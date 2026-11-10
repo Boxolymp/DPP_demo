@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useDrawer } from '../../app/providers/DrawerProvider';
 import { useField, useSection } from '../../hooks/useContent';
 import { DataValue } from './DataValue';
+import { Icon, type IconName } from './Icon';
 
 interface SectionCardProps {
   id: string;
@@ -31,16 +32,30 @@ export function SectionCard({ id, children, className = '', stretch = true }: Se
   );
 }
 
+interface FieldMetricProps {
+  fieldKey: string;
+  className?: string;
+  icon?: IconName;
+  /** Ergänzende Darstellung unter dem Wert, z. B. ein Mini-Diagramm. */
+  children?: ReactNode;
+}
+
 /** Kennzahl, die den Drawer für genau ein Feld öffnet. */
-export function FieldMetric({ fieldKey, className = '' }: { fieldKey: string; className?: string }) {
+export function FieldMetric({ fieldKey, className = '', icon, children }: FieldMetricProps) {
   const f = useField(fieldKey);
   const { openField } = useDrawer();
   return (
-    <button type="button" className={`metric ${className}`} onClick={() => openField(fieldKey)}>
+    <button type="button" className={`metric ${icon ? 'metric--icon' : ''} ${className}`} onClick={() => openField(fieldKey)}>
+      {icon ? (
+        <span className="metric__icon">
+          <Icon name={icon} size={18} />
+        </span>
+      ) : null}
       <span className="metric__label">{f.label}</span>
       <span className="metric__value">
         <DataValue fieldKey={fieldKey} />
       </span>
+      {children}
     </button>
   );
 }
