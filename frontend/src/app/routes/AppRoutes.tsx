@@ -35,7 +35,7 @@ export function AppRoutes() {
           <Route path="/" element={<ShowroomPage />} />
         </Route>
         <Route path="/products/:productId" element={<ProductShell />}>
-          <Route index element={<Navigate to={PAGES[0].id} replace />} />
+          <Route index element={<Navigate to="oem" replace />} />
           {PAGES.map(({ id }) => {
             const Page = PAGE_COMPONENTS[id];
             return <Route key={id} path={id} element={<Page />} />;

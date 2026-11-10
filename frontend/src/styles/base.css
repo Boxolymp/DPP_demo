@@ -27,8 +27,6 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 
 /* ---------- Shell ---------- */
 .shell { min-height: 100vh; display: grid; grid-template-rows: var(--topbar-h) 1fr; }
-.shell--product { grid-template-columns: var(--sidebar-w) 1fr; }
-.shell--product .topbar { grid-column: 1 / -1; }
 .shell__main { min-width: 0; }
 
 .topbar {
@@ -39,20 +37,16 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 .topbar__left { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .topbar__title { color: var(--muted); font-size: 14px; padding-left: 14px; border-left: 1px solid var(--line); white-space: nowrap; }
 .topbar__right { display: flex; justify-content: flex-end; }
-.logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; color: var(--navy); }
-.logo__mark { width: 22px; height: 22px; border-radius: 7px; background: linear-gradient(135deg, var(--blue), #14b8a6); }
+.logo { display: inline-flex; align-items: center; }
+.logo__img { display: block; height: 18px; width: auto; }
 .demo-pill { font-size: 12px; padding: 5px 10px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); border: 1px solid #f3dcae; white-space: nowrap; }
 
+.topbar__nav { display: flex; gap: 10px; min-width: 0; }
 .switcher { display: flex; gap: 6px; padding: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; }
 .switcher__item { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9px; font-size: 14px; color: var(--muted); }
 .switcher__item:hover { background: var(--blue-soft); color: var(--text); }
 .switcher__item.active { background: var(--surface); color: var(--blue); box-shadow: var(--shadow); font-weight: 600; }
 
-.sidebar { background: var(--surface); border-right: 1px solid var(--line); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: var(--topbar-h); height: calc(100vh - var(--topbar-h)); align-self: start; }
-.sidebar__group { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 14px 10px 4px; }
-.sidebar__item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; color: var(--muted); font-size: 14px; }
-.sidebar__item:hover { background: var(--surface-2); color: var(--text); }
-.sidebar__item.active { background: var(--blue-soft); color: var(--blue); font-weight: 600; }
 
 /* ---------- Karten und Bausteine ---------- */
 .card {

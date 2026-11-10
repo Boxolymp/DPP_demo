@@ -8,8 +8,8 @@ import { DrawerProvider } from '../providers/DrawerProvider';
 function Logo() {
   return (
     <Link to="/" className="logo" aria-label="Dataciders, zum Showroom">
-      <span className="logo__mark" aria-hidden="true" />
-      <span className="logo__word">dataciders</span>
+      {/* Offizielle Wortmarke von dataciders.com (dunkle Variante fuer helle Flaechen). */}
+      <img className="logo__img" src="/images/brand/dataciders-logo.png" alt="" width="600" height="54" />
     </Link>
   );
 }
@@ -20,45 +20,37 @@ function GlobalHeader({ inProduct }: { inProduct: boolean }) {
     <header className="topbar">
       <div className="topbar__left">
         <Logo />
-        <span className="topbar__title">Batterie-DPP Demonstrator</span>
+        <span className="topbar__title">Digital Product Passport Demonstrator</span>
       </div>
       {inProduct ? (
-        <nav className="switcher" aria-label="Perspektive">
-          {PAGES.filter((p) => p.perspective).map((p) => (
-            <NavLink key={p.id} to={productPath(productId, p.id)} className="switcher__item">
-              <Icon name={p.icon} size={16} />
-              {p.label}
+        <div className="topbar__nav">
+          <nav className="switcher" aria-label="Showroom">
+            <NavLink to="/" end className="switcher__item">
+              <Icon name="home" size={16} />
+              Showroom
             </NavLink>
-          ))}
-        </nav>
+          </nav>
+          <nav className="switcher" aria-label="Perspektive">
+            {PAGES.filter((p) => p.group === 'role').map((p) => (
+              <NavLink key={p.id} to={productPath(productId, p.id)} className="switcher__item">
+                <Icon name={p.icon} size={16} />
+                {p.label}
+              </NavLink>
+            ))}
+          </nav>
+          <nav className="switcher" aria-label="Ansichten">
+            {PAGES.filter((p) => p.group === 'view').map((p) => (
+              <NavLink key={p.id} to={productPath(productId, p.id)} className="switcher__item">
+                <Icon name={p.icon} size={16} />
+                {p.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       ) : (
         <span />
       )}
-      <div className="topbar__right">
-        <span className="demo-pill" title="Alle Werte sind illustrativ; die Datenanbindung folgt in Phase 2.">
-          Demo · illustrative Werte
-        </span>
-      </div>
     </header>
-  );
-}
-
-function GlobalSidebar() {
-  const productId = useProductId();
-  return (
-    <nav className="sidebar" aria-label="Ansichten">
-      <Link to="/" className="sidebar__item">
-        <Icon name="home" />
-        <span>Showroom</span>
-      </Link>
-      <p className="sidebar__group">Ansichten</p>
-      {PAGES.map((v) => (
-        <NavLink key={v.id} to={productPath(productId, v.id)} className="sidebar__item">
-          <Icon name={v.icon} />
-          <span>{v.label}</span>
-        </NavLink>
-      ))}
-    </nav>
   );
 }
 
@@ -70,7 +62,6 @@ export function AppShell({ variant }: { variant: 'showroom' | 'product' }) {
       <div className={`shell shell--${variant}`}>
         <a href="#main" className="skip-link">Zum Inhalt springen</a>
         <GlobalHeader inProduct={inProduct} />
-        {inProduct ? <GlobalSidebar /> : null}
         <main id="main" className="shell__main" key={pathname}>
           <Outlet />
         </main>

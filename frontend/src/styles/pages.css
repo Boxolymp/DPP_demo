@@ -137,14 +137,11 @@
   .grid-tiles--5 { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 900px) {
-  :root { --sidebar-w: 0px; }
-  .shell--product { grid-template-columns: 1fr; }
-  .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 12px; }
-  .sidebar__group { display: none; }
   .topbar { grid-template-columns: 1fr; height: auto; padding: 8px 14px; }
   .shell { grid-template-rows: auto 1fr; }
   .topbar__right { display: none; }
   .topbar__title { display: none; }
+  .topbar__nav { flex-wrap: wrap; }
   .switcher { overflow-x: auto; }
   .page { padding: 16px 14px 40px; }
   .grid-oem-top, .grid-oem-mid, .grid-customer, .grid-supplier-mid, .grid-supplier-bottom, .grid-footprint-mid, .grid-aftersales-top, .grid-aftersales-groups { grid-template-columns: 1fr; }

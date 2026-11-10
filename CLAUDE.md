@@ -46,7 +46,7 @@ Zielkonflikt zwischen zwei verbindlichen Zielen: vor einer Grundsatzabweichung O
 
 | URL | Seite | Spezifikation / Bild |
 | --- | --- | --- |
-| `/` | Showroom: 2.5D-Produktwahl, ohne Sidebar. Fünf Produktgruppen; nur Batterie führt weiter, die vier anderen sind „in Vorbereitung“ und nicht navigierbar. | `assets/01_showroom.png` |
+| `/` | Showroom: 2.5D-Produktwahl, schlanker Header ohne Navigation. Fünf Produktgruppen; nur Batterie führt weiter, die vier anderen sind „in Vorbereitung“ und nicht navigierbar. | `assets/01_showroom.png` |
 | `/products/:productId/oem` | Produktcockpit: BOM, Engineering, Wertschöpfung, Änderung, PCF, DPP | `pages/01_OEM.md`, `assets/02_oem.png` |
 | `/products/:productId/customer` | Öffentlich zulässige Batteriepass-Sicht, mobil gedacht | `pages/02_ENDKUNDE.md`, `assets/03_endkunde.png` |
 | `/products/:productId/supplier` | Eigener Beitrag, Nachweise, Status, Transport | `pages/03_ZULIEFERER.md`, `assets/04_zulieferer.png` |
@@ -57,12 +57,12 @@ Der Showroom ist ein Einstiegszustand, keine sechste Fachseite. Die Routen in `f
 
 ### Shell
 
-- **Header und Sidebar existieren genau einmal** und folgen `02_oem.png`; sie gelten für alle fünf Fachseiten. Header/Navigation aus anderen Screenshots nicht nachbauen; deren Besonderheiten (z. B. dunkle CO₂-Grafik, Aftersales-Szene, lieferantenspezifische Navigation) leben nur im Content-Bereich, Navigationsanker statt zweiter Sidebar. Der Showroom nutzt denselben Header ohne Sidebar.
-- Header: Logo und Titel (Klick öffnet den Showroom), Produktwechsel, Perspektivenumschalter OEM / Endkunde / Zulieferer, Suche, Benachrichtigungen, Benutzermenü. Der Umschalter erhält `productId`. CO₂ & Scopes und Aftersales sind über die Sidebar („Ansichten“) direkt erreichbar. Alle fünf Fachseiten sind jederzeit erreichbar und im aktiven Zustand erkennbar, ohne Sackgassen.
+- **Der Header existiert genau einmal; es gibt keine Sidebar.** Die gesamte Navigation liegt im Header und gilt für alle fünf Fachseiten. Header/Navigation aus Screenshots nicht nachbauen; deren Besonderheiten (z. B. dunkle CO₂-Grafik, Aftersales-Szene, lieferantenspezifische Navigation) leben nur im Content-Bereich, Navigationsanker statt zweiter Navigation. Der Showroom nutzt denselben Header, zeigt aber nur Logo und Titel: Der Kunde sieht dort zuerst nur, welche Produkte im „Laden“ stehen.
+- Header auf den Fachseiten: Logo und Titel (Klick öffnet den Showroom) und drei getrennte Umschalter: **Showroom** (Rücksprung zur Produktwahl), **Perspektive** (Zulieferer / OEM / Endkunde, `group: 'role'`) und **Ansichten** (CO₂ & Scopes / Aftersales, `group: 'view'`); die beiden letzten leiten sich aus `PAGES[].group` ab. Die Umschalter erhalten `productId`. Produktwechsel, Suche, Benachrichtigungen und Benutzermenü sind vorgesehen, aber noch nicht umgesetzt. Alle fünf Fachseiten sind jederzeit erreichbar und im aktiven Zustand erkennbar, ohne Sackgassen.
 - **Perspektive ≠ Berechtigung.** Der Wechsel ändert Darstellung, nie die Produktidentität; Rechte prüft ab Phase 2 der Server.
 - Aktive Ansicht, Produkt und Filter liegen in URL/Query (`stage`, `partyId`, `serialId` nur wenn tatsächlich genutzt), damit Reload und Deep Links funktionieren. Beim Produktwechsel bleibt kein Wert des alten Produkts (Drawer, Filter, Felder) sichtbar.
 - **Ein globaler `EntityDrawer`:** Jeder klickbare Bereich (Material, Werk, Lifecycle-Knoten, PCF-Beitrag, Serviceevent) öffnet denselben Drawer mit Erklärung, Feldern samt Status und Quellhinweis sowie Links zu verwandten Seiten. Rücknavigation behält den Filter.
-- Desktop-first; Sidebar auf schmalen Displays einklappbar, Header und Perspektivenwechsel bleiben erreichbar.
+- Desktop-first; auf schmalen Displays brechen die Umschalter im Header um und bleiben erreichbar.
 
 ## Frontend-Struktur (Ist-Stand)
 
@@ -151,7 +151,7 @@ Härtegrade: **BLOCKER** muss für die betroffene Änderung bestehen, sonst nich
 | G4 | Blocker | Keine hartkodierten Fachwerte in Pages/Karten/Charts; Zugriff nur über `useField`/`useSection`. | Daten-/UI-Change |
 | G5 | Blocker | `illustrative` sichtbar, `unavailable` → „nicht verfügbar“, kein `live`; keine implizit echte Compliance-/PCF-/SoH-/Servicebehauptung. | Daten-/UI-Change |
 | G6 | Blocker | Aktive Elemente per Maus **und** Tastatur bedienbar, sichtbarer Fokus; Drawer mit Escape, Fokus-Rückgabe und verständlicher Beschriftung; keine Klickattrappen. | interaktive UI |
-| G7 | Release | `/` und fünf Fachrouten laden; eine Header-/Sidebar-Implementierung; Batterie → OEM; vier Gruppen „in Vorbereitung“; `productId` bleibt beim Perspektivenwechsel erhalten. | Routing/Shell, Release |
+| G7 | Release | `/` und fünf Fachrouten laden; eine Header-Implementierung ohne Sidebar; Batterie → OEM; vier Gruppen „in Vorbereitung“; `productId` bleibt beim Perspektivenwechsel erhalten. | Routing/Shell, Release |
 | G8 | Release | Showroom bei `prefers-reduced-motion` und mobil (z. B. 390×844) ohne Parallax nutzbar und ohne unbenutzbare horizontale UI; Kontraste, Alt-Texte, Fokus geprüft. | Showroom, Release |
 | G9 | Release | **Initial geladene Showroom-Bilder < 500.000 Bytes** je Profil (Messung siehe unten). Bei Überschreitung vorher den Trade-off klären. | Assetänderung, Release |
 | G10 | Baseline | Initiales JS (übertragen), Route-Chunks, LCP und CLS messen; Regressionen untersuchen. | Bundle-/UI-Change, Release |
