@@ -17,8 +17,8 @@ export const aftersalesFlowIds = c.group('aftersales.flow', flow, (r, id) => ({
 }));
 
 c.add('aftersales.featured', {
-  title: 'Ausgewählter Use Case: Field Feedback',
-  summary: 'Nutzungsdaten und Kundenfeedback aus dem Feld erfassen, analysieren und für Produktverbesserungen nutzen.',
+  title: 'Beispielereignisse: Field Feedback',
+  summary: 'Nutzungsdaten und Kundenfeedback aus dem Feld erfassen, analysieren und für Produktverbesserungen nutzen. Die Ereignisse unten sind illustrativ; echte Ereignisse setzen eine Serien- und Telemetrieanbindung voraus.',
   fields: [
     fld('aftersales.event.temp', 'Unerwarteter Temperaturanstieg', 'Fahrzeug · vor 2 Tagen', { src: 'BMS / IoT', tone: 'open' }),
     fld('aftersales.event.range', 'Hinweis auf reduzierte Reichweite', 'Werkstatt · vor 5 Tagen', { src: 'Service / CRM', tone: 'warn' }),
@@ -26,26 +26,27 @@ c.add('aftersales.featured', {
   ],
 });
 
+// \u00AD (weiches Trennzeichen) gibt in den schmalen Kacheln die Trennstelle vor.
 interface UseCaseRow { id: string; title: string; icon: IconName; sub: string; summary: string; src: string }
 const recognize: UseCaseRow[] = [
-  { id: 'feedback', title: 'Field Feedback', icon: 'pulse', sub: 'Nutzungsdaten & Kundenfeedback', summary: 'Rückmeldungen aus dem Feld werden gesammelt und klassifiziert.', src: 'BMS / CRM' },
-  { id: 'soh', title: 'Batteriegesundheit (SoH)', icon: 'battery', sub: 'Zustand & Alterungsverhalten', summary: 'Der State of Health beschreibt den Alterungszustand. Er braucht eine reale Serien- und Telemetrieanbindung.', src: 'BMS / IoT' },
-  { id: 'fake', title: 'Fälschungsprüfung', icon: 'search', sub: 'Originalität & Plagiatserkennung', summary: 'Über den Produktpass lässt sich die Echtheit einer Batterie prüfen.', src: 'DPP' },
+  { id: 'feedback', title: 'Field Feedback', icon: 'car', sub: 'Nutzungsdaten & Kundenfeedback', summary: 'Rückmeldungen aus dem Feld werden gesammelt und klassifiziert.', src: 'BMS / CRM' },
+  { id: 'soh', title: 'Batterie\u00ADgesundheit (SoH)', icon: 'battery', sub: 'Zustand & Alterungsverhalten', summary: 'Der State of Health beschreibt den Alterungszustand. Er braucht eine reale Serien- und Telemetrieanbindung.', src: 'BMS / IoT' },
+  { id: 'fake', title: 'Fälschungs\u00ADprüfung', icon: 'search', sub: 'Originalität & Plagiatserkennung', summary: 'Über den Produktpass lässt sich die Echtheit einer Batterie prüfen.', src: 'DPP' },
   { id: 'predictive', title: 'Predictive Maintenance', icon: 'chart', sub: 'Ausfälle vorhersagen und vermeiden', summary: 'Aus Telemetrie werden Ausfälle prognostiziert, bevor sie auftreten.', src: 'BMS / IoT' },
   { id: 'recall', title: 'Rückruf- & Risikoerkennung', icon: 'shield', sub: 'Sicherheitsrisiken erkennen', summary: 'Betroffene Chargen und Seriennummern lassen sich gezielt eingrenzen.', src: 'Qualität / DPP' },
 ];
 const act: UseCaseRow[] = [
-  { id: 'order', title: 'Ersatzteilbestellung', icon: 'box', sub: 'Passende Teile schnell identifizieren', summary: 'Über die Stückliste werden passende Ersatzteile gefunden.', src: 'PLM / Servicekatalog' },
-  { id: 'compat', title: 'Kompatibilitätsprüfung', icon: 'link', sub: 'Teile, Software & Fahrzeuge prüfen', summary: 'Prüft, ob ein Teil zu Produktrevision und Seriennummer passt.', src: 'PLM' },
-  { id: 'repair', title: 'Digitale Reparaturanleitungen', icon: 'doc', sub: 'Schritt für Schritt zur sicheren Reparatur', summary: 'Freigegebene Anleitungen je Produktrevision und Sprache.', src: 'PLM / DMS' },
+  { id: 'order', title: 'Ersatzteil\u00ADbestellung', icon: 'box', sub: 'Passende Teile schnell identifizieren', summary: 'Über die Stückliste werden passende Ersatzteile gefunden.', src: 'PLM / Servicekatalog' },
   { id: 'warranty', title: 'Garantie & Service', icon: 'shield', sub: 'Ansprüche prüfen und Serviceprozesse', summary: 'Garantiebedingungen und Serviceprozesse je Seriennummer und Markt.', src: 'Service / CRM' },
-  { id: 'history', title: 'Servicehistorie', icon: 'clock', sub: 'Alle Eingriffe und Ereignisse im Lebenslauf', summary: 'Lückenlose Historie von Reparaturen und Ereignissen.', src: 'Service / CRM' },
+  { id: 'repair', title: 'Digitale Reparatur\u00ADanleitungen', icon: 'doc', sub: 'Schritt für Schritt zur sicheren Reparatur', summary: 'Freigegebene Anleitungen je Produktrevision und Sprache.', src: 'PLM / DMS' },
+  { id: 'history', title: 'Service\u00ADhistorie', icon: 'clock', sub: 'Alle Eingriffe und Ereignisse im Lebenslauf', summary: 'Lückenlose Historie von Reparaturen und Ereignissen.', src: 'Service / CRM' },
+  { id: 'compat', title: 'Kompatibilitätsprüfung', icon: 'link', sub: 'Teile, Software & Fahrzeuge prüfen', summary: 'Prüft, ob ein Teil zu Produktrevision und Seriennummer passt.', src: 'PLM' },
 ];
 const improve: UseCaseRow[] = [
   { id: 'f2d', title: 'Field-to-Design Feedback', icon: 'gear', sub: 'Feldwissen in Produktentwicklung', summary: 'Feldbeobachtungen führen zu Änderungsanforderungen im Engineering.', src: 'PLM' },
-  { id: 'secondlife', title: 'Second Life / Remanufacturing', icon: 'recycle', sub: 'Zweiten Lebenszyklus ermöglichen', summary: 'Bewertet, ob eine Batterie weiterverwendet oder aufgearbeitet werden kann.', src: 'BMS / PLM' },
-  { id: 'residual', title: 'Restwertbewertung', icon: 'chart', sub: 'Transparente Bewertung für neue Geschäftsmodelle', summary: 'Der Restwert ergibt sich aus Zustand, Materialien und Nachfrage.', src: 'BMS / DPP' },
+  { id: 'secondlife', title: 'Second Life / Remanu\u00ADfacturing', icon: 'recycle', sub: 'Zweiten Lebenszyklus ermöglichen', summary: 'Bewertet, ob eine Batterie weiterverwendet oder aufgearbeitet werden kann.', src: 'BMS / PLM' },
   { id: 'recycling', title: 'Recycling-Optimierung', icon: 'leaf', sub: 'Rückführung effizient und nachhaltig gestalten', summary: 'Verbessert Demontage und Rückgewinnung mit Materialdaten aus dem Pass.', src: 'DPP / Logistik' },
+  { id: 'residual', title: 'Restwert\u00ADbewertung', icon: 'chart', sub: 'Transparente Bewertung für neue Geschäftsmodelle', summary: 'Der Restwert ergibt sich aus Zustand, Materialien und Nachfrage.', src: 'BMS / DPP' },
 ];
 function useCaseGroup(name: string, rows: UseCaseRow[]) {
   return c.group(`aftersales.${name}`, rows, (r, id) => ({
@@ -83,4 +84,3 @@ export const aftersalesSourceIds = c.group('aftersales.source', sources, (r, id)
 }));
 
 export const aftersalesContent = { fields: c.fields, sections: c.sections };
-export const aftersalesEventKeys = ['aftersales.event.temp', 'aftersales.event.range', 'aftersales.event.feedback'];
