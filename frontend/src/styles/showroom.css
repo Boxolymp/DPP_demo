@@ -22,6 +22,7 @@
 
   position: relative;
   isolation: isolate;
+  container: room / inline-size;
   width: 100%;
   min-width: 0;
   min-height: calc(100vh - var(--topbar-h, 60px));
@@ -83,8 +84,9 @@
 }
 
 /* 1b. RAND- UND VORDERGRUNDELEMENTE (Decke, Pflanzen, Moebel) ------------ */
-/* Freigestellte Ausschnitte aus 01_showroom.png. Groessen in vw bezogen auf
-   die 1536 px breite Referenz (1 Referenz-px = 100vw / 1536), damit Decke,
+/* Freigestellte Ausschnitte aus 01_showroom.png. Groessen in cqw (Breite des
+   Raums neben der Sidebar) bezogen auf die 1536 px breite Referenz
+   (1 Referenz-px = 100cqw / 1536), damit Decke,
    Randpflanzen und Bodenband im Massstab des Referenzbildes zueinander passen. */
 
 /* Holzdecke mit Spots oben rechts (Referenz x 820-1536, y 74-120). */
@@ -93,7 +95,7 @@
   top: 0;
   right: 0;
   z-index: -1;
-  width: calc(100vw * 716 / 1536);
+  width: calc(100cqw * 716 / 1536);
   height: auto;
   pointer-events: none;
 }
@@ -115,8 +117,8 @@
 .room__plant {
   position: absolute;
   z-index: 0;
-  bottom: calc(100vw * 204 / 1536);
-  width: calc(100vw * 38 / 1536);
+  bottom: calc(100cqw * 204 / 1536);
+  width: calc(100cqw * 38 / 1536);
   height: auto;
   pointer-events: none;
   will-change: transform;
@@ -150,12 +152,12 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 1.6vw, 24px);
+  gap: clamp(14px, 1.6cqw, 24px);
   width: 100%;
   max-width: 2400px;
   min-width: 0;
   margin-inline: auto;
-  padding: clamp(18px, 2vw, 32px) clamp(16px, 3vw, 64px) 36px;
+  padding: clamp(18px, 2cqw, 32px) clamp(16px, 3cqw, 64px) 36px;
 }
 
 .room__head {
@@ -172,7 +174,7 @@
 .room__head h1 {
   margin: 0;
   color: var(--room-ink);
-  font-size: clamp(26px, 2.2vw, 36px);
+  font-size: clamp(26px, 2.2cqw, 36px);
   line-height: 1.1;
   letter-spacing: -.035em;
   font-weight: 760;
@@ -182,7 +184,7 @@
   max-width: 710px;
   margin-top: 9px;
   color: #3e4c62;
-  font-size: clamp(14px, 1vw, 16px);
+  font-size: clamp(14px, 1cqw, 16px);
   line-height: 1.45;
 }
 
@@ -346,10 +348,10 @@
   left: 9px;
   display: flex;
   align-items: center;
-  gap: clamp(6px, .7vw, 10px);
+  gap: clamp(6px, .7cqw, 10px);
   min-width: 0;
   min-height: 74px;
-  padding: 11px clamp(9px, .9vw, 13px);
+  padding: 11px clamp(9px, .9cqw, 13px);
   border-radius: 8px;
   background: linear-gradient(180deg, rgba(255, 255, 255, .99), rgba(250, 249, 248, .97));
   box-shadow: 0 5px 14px rgba(72, 48, 25, .14);
@@ -360,7 +362,7 @@
 .shelf__icon { display: flex; align-items: center; flex: none; color: var(--room-ink); }
 .shelf__top h2 {
   margin: 0 0 5px;
-  font-size: clamp(15px, 1vw, 19px);
+  font-size: clamp(15px, 1cqw, 19px);
   line-height: 1.1;
   letter-spacing: -.02em;
   overflow-wrap: anywhere;
@@ -457,7 +459,7 @@
   border-radius: 8px;
   color: #2d3b54;
   background: rgba(255, 255, 255, .97);
-  font-size: clamp(12px, .86vw, 14px);
+  font-size: clamp(12px, .86cqw, 14px);
   line-height: 1.38;
   overflow-wrap: break-word;
   box-shadow: 0 4px 8px rgba(70, 44, 18, .09);
@@ -501,7 +503,7 @@
 /* Auf schmaleren Fenstern loest sich der durchgehende Korpus auf; jede
    Nische bekommt ihren eigenen Holzrahmen und die Spalten reflowen.
    So steht nie eine unbenutzbare horizontale UI (vgl. Gate G8). */
-@media (max-width: 1160px) {
+@container room (max-width: 1160px) {
   /* Decke und Randpflanzen brauchen die breite Desktop-Komposition. */
   .room__ceiling,
   .room__plant { display: none; }
@@ -535,7 +537,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@container room (max-width: 760px) {
   .room__fg,
   .room__lights { display: none; }
   .shelves { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -550,7 +552,7 @@
   }
 }
 
-@media (max-width: 520px) {
+@container room (max-width: 520px) {
   .room__content { padding: 16px 12px 28px; }
   .room__head h1 { font-size: 26px; }
   .shelves { grid-template-columns: 1fr; gap: 16px; }

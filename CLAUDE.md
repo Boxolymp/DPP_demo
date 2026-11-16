@@ -52,12 +52,13 @@ Zielkonflikt zwischen zwei verbindlichen Zielen: vor einer Grundsatzabweichung O
 | `/products/:productId/supplier` | Eigener Beitrag, Nachweise, Status, Transport | `pages/03_ZULIEFERER.md`, `assets/04_zulieferer.png` |
 | `/products/:productId/footprint` | Corporate Scopes, CCF/PCF, Daten-Röntgenblick, Herkunft | `pages/04_CO2_SCOPES_DATENFLUSS.md`, `assets/05_co2_scopes.png` |
 | `/products/:productId/aftersales` | Erkennen, Handeln, Weiterentwickeln: Feedback, Service, Zirkularität | `pages/05_AFTERSALES.md`, `assets/06_aftersales.png` |
+| `/sources`, `/data-factory`, `/data-platforms`, `/use-cases` | Bereichsseiten der Sidebar (1. Quellsysteme: ERP, PDM, BMS, Excel, LCA, Design, Service; 2. Data Factory: Microsoft Fabric; 3. Data Platforms: Catena-X, Open DPP; 4. Use Cases 1–4). Eintrag nur per `?item=`, keine tieferen Routen. Derzeit Platzhalter „Inhalt in Vorbereitung“, keine erfundenen Inhalte. | – |
 
-Der Showroom ist ein Einstiegszustand, keine sechste Fachseite. Die Routen in `frontend/src/lib/pages.ts` sind die einzige Quelle für Routen, Navigation und Verknüpfungen.
+Der Showroom ist ein Einstiegszustand, keine sechste Fachseite. Die Routen in `frontend/src/lib/pages.ts` (`PAGES` für Fachseiten, `AREAS` für die Sidebar) sind die einzige Quelle für Routen, Navigation und Verknüpfungen.
 
 ### Shell
 
-- **Der Header existiert genau einmal; es gibt keine Sidebar.** Die gesamte Navigation liegt im Header und gilt für alle fünf Fachseiten. Header/Navigation aus Screenshots nicht nachbauen; deren Besonderheiten (z. B. dunkle CO₂-Grafik, Aftersales-Szene, lieferantenspezifische Navigation) leben nur im Content-Bereich, Navigationsanker statt zweiter Navigation. Der Showroom nutzt denselben Header, zeigt aber nur Logo und Titel: Der Kunde sieht dort zuerst nur, welche Produkte im „Laden“ stehen.
+- **Der Header existiert genau einmal; dazu kommt genau eine dauerhaft sichtbare, helle Sidebar** (`app/shell/Sidebar`) auf allen Seiten inkl. Showroom, mit den vier Bereichen aus `AREAS` als Dropdowns (Bereich der aktuellen Seite aufgeklappt) im Stil der Header-Umschalter (`.switcher`). Die Produkt-Navigation (Showroom / Perspektive / Ansichten) bleibt im Header und gilt für alle fünf Fachseiten. Unter 900 px steht die Sidebar umbrechend über dem Inhalt. Responsive Regeln im Inhalt nutzen Container-Queries (`main`, im Showroom `room`) statt Fenster-Media-Queries, weil die Sidebar die Inhaltsbreite verringert. Header/Navigation aus Screenshots nicht nachbauen; deren Besonderheiten (z. B. dunkle CO₂-Grafik, Aftersales-Szene, lieferantenspezifische Navigation) leben nur im Content-Bereich, Navigationsanker statt zweiter Navigation. Showroom und Bereichsseiten nutzen denselben Header, zeigen aber nur Logo und Titel.
 - Header auf den Fachseiten: Logo und Titel (Klick öffnet den Showroom) und drei getrennte Umschalter: **Showroom** (Rücksprung zur Produktwahl), **Perspektive** (Zulieferer / OEM / Endkunde, `group: 'role'`) und **Ansichten** (CO₂ & Scopes / Aftersales, `group: 'view'`); die beiden letzten leiten sich aus `PAGES[].group` ab. Die Umschalter erhalten `productId`. Produktwechsel, Suche, Benachrichtigungen und Benutzermenü sind vorgesehen, aber noch nicht umgesetzt. Alle fünf Fachseiten sind jederzeit erreichbar und im aktiven Zustand erkennbar, ohne Sackgassen.
 - **Perspektive ≠ Berechtigung.** Der Wechsel ändert Darstellung, nie die Produktidentität; Rechte prüft ab Phase 2 der Server.
 - Aktive Ansicht, Produkt und Filter liegen in URL/Query (`stage`, `partyId`, `serialId` nur wenn tatsächlich genutzt), damit Reload und Deep Links funktionieren. Beim Produktwechsel bleibt kein Wert des alten Produkts (Drawer, Filter, Felder) sichtbar.
@@ -68,8 +69,8 @@ Der Showroom ist ein Einstiegszustand, keine sechste Fachseite. Die Routen in `f
 
 ```text
 frontend/src/
-├─ app/            shell/AppShell, routes/AppRoutes, providers/DrawerProvider
-├─ features/       showroom, oem, customer, supplier, footprint, aftersales (je Page + Sektionen)
+├─ app/            shell/AppShell + Sidebar, routes/AppRoutes, providers/DrawerProvider
+├─ features/       showroom, oem, customer, supplier, footprint, aftersales (je Page + Sektionen), areas (Sidebar-Bereichsseiten)
 ├─ components/     ui/ (SectionCard, Tile, DataValue, Chain, Icon), charts/, drawers/EntityDrawer
 ├─ content/        typisierte Beispieldaten je Seite (index.ts, builder.ts)
 ├─ hooks/          useContent.ts (einzige Lesegrenze für Fachdaten)
@@ -151,7 +152,7 @@ Härtegrade: **BLOCKER** muss für die betroffene Änderung bestehen, sonst nich
 | G4 | Blocker | Keine hartkodierten Fachwerte in Pages/Karten/Charts; Zugriff nur über `useField`/`useSection`. | Daten-/UI-Change |
 | G5 | Blocker | `illustrative` sichtbar, `unavailable` → „nicht verfügbar“, kein `live`; keine implizit echte Compliance-/PCF-/SoH-/Servicebehauptung. | Daten-/UI-Change |
 | G6 | Blocker | Aktive Elemente per Maus **und** Tastatur bedienbar, sichtbarer Fokus; Drawer mit Escape, Fokus-Rückgabe und verständlicher Beschriftung; keine Klickattrappen. | interaktive UI |
-| G7 | Release | `/` und fünf Fachrouten laden; eine Header-Implementierung ohne Sidebar; Batterie → OEM; vier Gruppen „in Vorbereitung“; `productId` bleibt beim Perspektivenwechsel erhalten. | Routing/Shell, Release |
+| G7 | Release | `/`, fünf Fachrouten und vier Bereichsrouten laden; eine Header- und eine Sidebar-Implementierung; Batterie → OEM; vier Gruppen „in Vorbereitung“; `productId` bleibt beim Perspektivenwechsel erhalten. | Routing/Shell, Release |
 | G8 | Release | Showroom bei `prefers-reduced-motion` und mobil (z. B. 390×844) ohne Parallax nutzbar und ohne unbenutzbare horizontale UI; Kontraste, Alt-Texte, Fokus geprüft. | Showroom, Release |
 | G9 | Release | **Initial geladene Showroom-Bilder < 500.000 Bytes** je Profil (Messung siehe unten). Bei Überschreitung vorher den Trade-off klären. | Assetänderung, Release |
 | G10 | Baseline | Initiales JS (übertragen), Route-Chunks, LCP und CLS messen; Regressionen untersuchen. | Bundle-/UI-Change, Release |

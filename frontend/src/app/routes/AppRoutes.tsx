@@ -1,7 +1,7 @@
 import { lazy, Suspense, type ComponentType } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { PRODUCT_GROUPS } from '../../content/showroom';
-import { PAGES, type PageId } from '../../lib/pages';
+import { AREAS, PAGES, type PageId } from '../../lib/pages';
 import { AppShell } from '../shell/AppShell';
 
 function lazyPage<K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) {
@@ -9,6 +9,7 @@ function lazyPage<K extends string>(load: () => Promise<Record<K, ComponentType>
 }
 
 const ShowroomPage = lazyPage(() => import('../../features/showroom/ShowroomPage'), 'ShowroomPage');
+const AreaPage = lazy(() => import('../../features/areas/AreaPage').then((m) => ({ default: m.AreaPage })));
 
 /** Je Fachseite genau eine Komponente; eine neue Seite in `PAGES` ohne Eintrag hier ist ein Typfehler. */
 const PAGE_COMPONENTS: Record<PageId, ComponentType> = {
@@ -31,8 +32,11 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<p className="loading" role="status">Wird geladen …</p>}>
       <Routes>
-        <Route element={<AppShell variant="showroom" />}>
+        <Route element={<AppShell variant="plain" />}>
           <Route path="/" element={<ShowroomPage />} />
+          {AREAS.map(({ id }) => (
+            <Route key={id} path={id} element={<AreaPage areaId={id} />} />
+          ))}
         </Route>
         <Route path="/products/:productId" element={<ProductShell />}>
           <Route index element={<Navigate to="oem" replace />} />

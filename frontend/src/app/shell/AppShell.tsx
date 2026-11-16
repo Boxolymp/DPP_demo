@@ -4,6 +4,7 @@ import { Icon } from '../../components/ui/Icon';
 import { useProductId } from '../../hooks/useContent';
 import { PAGES, productPath } from '../../lib/pages';
 import { DrawerProvider } from '../providers/DrawerProvider';
+import { Sidebar } from './Sidebar';
 
 function Logo() {
   return (
@@ -54,14 +55,16 @@ function GlobalHeader({ inProduct }: { inProduct: boolean }) {
   );
 }
 
-export function AppShell({ variant }: { variant: 'showroom' | 'product' }) {
+/** `plain`: Showroom und Bereichsseiten, Header nur mit Logo und Titel. `product`: Fachseiten mit Umschaltern. */
+export function AppShell({ variant }: { variant: 'plain' | 'product' }) {
   const { pathname } = useLocation();
   const inProduct = variant === 'product';
   return (
     <DrawerProvider>
-      <div className={`shell shell--${variant}`}>
+      <div className="shell">
         <a href="#main" className="skip-link">Zum Inhalt springen</a>
         <GlobalHeader inProduct={inProduct} />
+        <Sidebar />
         <main id="main" className="shell__main" key={pathname}>
           <Outlet />
         </main>
