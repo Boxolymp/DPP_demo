@@ -8,9 +8,11 @@ interface FieldOptions {
   desc?: string;
   tone?: Tone;
   related?: RelatedLink[];
+  /** Wert stammt aus einem lokalen Import des Nutzers. */
+  imported?: boolean;
 }
 
-/** Ohne Wert ist das Feld `unavailable`, sonst `illustrative`. */
+/** Ohne Wert ist das Feld `unavailable`, sonst `illustrative` bzw. bei Import `imported`. */
 export function fld(
   key: string,
   label: string,
@@ -22,7 +24,7 @@ export function fld(
     label,
     value,
     unit: o.unit,
-    status: value === undefined ? 'unavailable' : 'illustrative',
+    status: value === undefined ? 'unavailable' : o.imported ? 'imported' : 'illustrative',
     sourceHint: o.src,
     description: o.desc,
     tone: o.tone,

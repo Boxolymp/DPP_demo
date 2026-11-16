@@ -1,0 +1,209 @@
+{
+  "schemaVersion": "1.0",
+  "mode": "demo",
+  "instanceId": "urn:demo:battery:BAT-2026-0042",
+  "idtaDomains": [
+    {
+      "idta": "02035-1",
+      "name": "Digital Nameplate",
+      "version": "1.0",
+      "present": true,
+      "recognition": "semanticId"
+    },
+    {
+      "idta": "02035-2",
+      "name": "Handover Documentation",
+      "version": "1.0",
+      "present": true,
+      "recognition": "semanticId"
+    },
+    {
+      "idta": "02035-3",
+      "name": "Product Carbon Footprint",
+      "version": "1.0",
+      "present": true,
+      "recognition": "semanticId"
+    },
+    {
+      "idta": "02035-4",
+      "name": "Technical Data",
+      "version": "1.0.1 (online catalog)",
+      "present": true,
+      "recognition": "semanticId"
+    },
+    {
+      "idta": "02035-5",
+      "name": "Product Condition",
+      "version": "1.0.2 (online catalog)",
+      "present": true,
+      "recognition": "semanticId"
+    },
+    {
+      "idta": "02035-6",
+      "name": "Material Composition",
+      "version": "1.0.2 (online catalog; top-level semanticId still 1.0.1)",
+      "present": true,
+      "recognition": "semanticId"
+    },
+    {
+      "idta": "02035-7",
+      "name": "Circularity",
+      "version": "1.0.1 (online catalog; top-level semanticId still 1.0.0)",
+      "present": true,
+      "recognition": "semanticId"
+    }
+  ],
+  "nameplate": {
+    "manufacturer": {
+      "value": "Demo Battery Systems GmbH",
+      "unit": null,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-1",
+        "path": "ManufacturerName",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "serialNumber": {
+      "value": "BAT-2026-0042",
+      "unit": null,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-1",
+        "path": "SerialNumber",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "manufactured": {
+      "value": "2026-07-15",
+      "unit": null,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-1",
+        "path": "DateOfManufacture",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "lifecycleStage": {
+      "value": "Original",
+      "unit": null,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-1",
+        "path": "LifeCycleStage",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    }
+  },
+  "technical": {
+    "nominalVoltage": {
+      "value": 400,
+      "unit": "V",
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-4",
+        "path": "TechnicalPropertyAreas.CapacityEnergyVoltage.NominalVoltage",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "certifiedUsableEnergy": {
+      "value": 78,
+      "unit": "kWh (check unit)",
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-4",
+        "path": "TechnicalPropertyAreas.CapacityEnergyVoltage.CertifiedUsableBatteryEnergy",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "demoNominalEnergy": null,
+    "ratedCapacity": {
+      "value": 200,
+      "unit": "Ah",
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-4",
+        "path": "TechnicalPropertyAreas.CapacityEnergyVoltage.RatedCapacity",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    }
+  },
+  "condition": {
+    "stateOfCharge": {
+      "value": 68,
+      "unit": "%",
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-5",
+        "path": "StateOfCharge.StateOfChargeValue",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "stateOfChargeUpdated": {
+      "value": "2026-11-15T12:00:00Z",
+      "unit": null,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-5",
+        "path": "StateOfCharge.LastUpdate",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "cycles": {
+      "value": 420,
+      "unit": "cycles",
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-5",
+        "path": "NumberOfFullCycles.NumberOfFullCyclesValue",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    },
+    "stateOfHealthDemoOnly": null
+  },
+  "material": {
+    "chemistry": {
+      "value": "NMC",
+      "unit": null,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-6",
+        "path": "BatteryChemistry.ShortName",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    }
+  },
+  "carbon": {
+    "pcf": {
+      "value": 6400,
+      "unit": "kg CO2e per piece",
+      "referenceUnit": "piece",
+      "validForSummarization": true,
+      "provenance": {
+        "submodelId": "urn:demo:battery:BAT-2026-0042:idta:02035-3",
+        "path": "ProductCarbonFootprints.ProductCarbonFootprint.PcfCO2eq",
+        "match": "semanticId",
+        "semanticIds": [],
+        "verified": false
+      }
+    }
+  },
+  "diagnostics": [],
+  "limitations": [
+    "Not an IDTA validator",
+    "No blanket legal compliance check",
+    "Provenance.verified=false until source attestation",
+    "SoH demo KPI is not automatically mapped from IDTA ProductCondition"
+  ]
+}

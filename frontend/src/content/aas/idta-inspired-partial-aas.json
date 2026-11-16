@@ -1,0 +1,402 @@
+{
+  "assetAdministrationShells": [
+    {
+      "modelType": "AssetAdministrationShell",
+      "id": "urn:demo:battery:BAT-2026-0042",
+      "idShort": "BatteryBAT20260042",
+      "assetInformation": {
+        "assetKind": "Instance",
+        "globalAssetId": "urn:demo:battery:BAT-2026-0042"
+      },
+      "submodels": [
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-1"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-2"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-3"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-4"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-5"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-6"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:demo:battery:BAT-2026-0042:idta:02035-7"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "submodels": [
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-1",
+      "idShort": "BatteryNameplate",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/digitalbatterypassport/nameplate/1/0/Nameplate"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "MultiLanguageProperty",
+          "idShort": "ManufacturerName",
+          "value": [
+            {
+              "language": "en",
+              "text": "Demo Battery Systems GmbH"
+            }
+          ]
+        },
+        {
+          "modelType": "Property",
+          "idShort": "SerialNumber",
+          "valueType": "xs:string",
+          "value": "BAT-2026-0042"
+        },
+        {
+          "modelType": "Property",
+          "idShort": "DateOfManufacture",
+          "valueType": "xs:date",
+          "value": "2026-07-15"
+        },
+        {
+          "modelType": "Property",
+          "idShort": "LifeCycleStage",
+          "valueType": "xs:string",
+          "value": "Original"
+        }
+      ]
+    },
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-2",
+      "idShort": "HandoverDocumentation",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "0173-1#01-AHF578#003"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "Documents",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": []
+        }
+      ]
+    },
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-3",
+      "idShort": "CarbonFootprint",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/CarbonFootprint/CarbonFootprint/1/0"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "ProductCarbonFootprints",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": [
+            {
+              "modelType": "SubmodelElementCollection",
+              "idShort": "ProductCarbonFootprint",
+              "value": [
+                {
+                  "modelType": "Property",
+                  "idShort": "PcfCO2eq",
+                  "valueType": "xs:decimal",
+                  "value": "6400"
+                },
+                {
+                  "modelType": "Property",
+                  "idShort": "ReferenceImpactUnitForCalculation",
+                  "valueType": "xs:string",
+                  "value": "piece"
+                },
+                {
+                  "modelType": "Property",
+                  "idShort": "QuantityOfMeasureForCalculation",
+                  "valueType": "xs:double",
+                  "value": "1"
+                },
+                {
+                  "modelType": "SubmodelElementList",
+                  "idShort": "LifeCyclePhases",
+                  "orderRelevant": false,
+                  "typeValueListElement": "SubmodelElementCollection",
+                  "value": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-4",
+      "idShort": "TechnicalData",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "https://admin-shell.io/idta/digitalbatterypassport/TechnicalData/1/0"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "GeneralInformation",
+          "value": [
+            {
+              "modelType": "Property",
+              "idShort": "ManufacturerName",
+              "valueType": "xs:string",
+              "value": "Demo Battery Systems GmbH"
+            }
+          ]
+        },
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "TechnicalPropertyAreas",
+          "value": [
+            {
+              "modelType": "SubmodelElementCollection",
+              "idShort": "CapacityEnergyVoltage",
+              "value": [
+                {
+                  "modelType": "Property",
+                  "idShort": "NominalVoltage",
+                  "valueType": "xs:float",
+                  "value": "400"
+                },
+                {
+                  "modelType": "Property",
+                  "idShort": "RatedCapacity",
+                  "valueType": "xs:float",
+                  "value": "200"
+                },
+                {
+                  "modelType": "Property",
+                  "idShort": "CertifiedUsableBatteryEnergy",
+                  "valueType": "xs:float",
+                  "value": "78"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-5",
+      "idShort": "ProductCondition",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.product_condition:1.0.2#ProductCondition"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "StateOfCharge",
+          "value": [
+            {
+              "modelType": "Property",
+              "idShort": "StateOfChargeValue",
+              "valueType": "xs:float",
+              "value": "68"
+            },
+            {
+              "modelType": "Property",
+              "idShort": "LastUpdate",
+              "valueType": "xs:dateTime",
+              "value": "2026-11-15T12:00:00Z"
+            }
+          ]
+        },
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "NumberOfFullCycles",
+          "value": [
+            {
+              "modelType": "Property",
+              "idShort": "NumberOfFullCyclesValue",
+              "valueType": "xs:unsignedInt",
+              "value": "420"
+            },
+            {
+              "modelType": "Property",
+              "idShort": "LastUpdate",
+              "valueType": "xs:dateTime",
+              "value": "2026-11-15T12:00:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-6",
+      "idShort": "MaterialComposition",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.material_composition:1.0.1#MaterialComposition"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "BatteryChemistry",
+          "value": [
+            {
+              "modelType": "Property",
+              "idShort": "ShortName",
+              "valueType": "xs:string",
+              "value": "NMC"
+            }
+          ]
+        },
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "BatteryMaterials",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": []
+        },
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "HazardousSubstances",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": []
+        }
+      ]
+    },
+    {
+      "modelType": "Submodel",
+      "id": "urn:demo:battery:BAT-2026-0042:idta:02035-7",
+      "idShort": "Circularity",
+      "semanticId": {
+        "type": "ExternalReference",
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "value": "urn:samm:io.admin-shell.idta.batterypass.circularity:1.0.0#Circularity"
+          }
+        ]
+      },
+      "submodelElements": [
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "DismantlingAndRemovalInformation",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": []
+        },
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "SparePartSources",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": []
+        },
+        {
+          "modelType": "SubmodelElementList",
+          "idShort": "RecycledContentInformation",
+          "orderRelevant": false,
+          "typeValueListElement": "SubmodelElementCollection",
+          "value": []
+        },
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "SafetyMeasures",
+          "value": []
+        },
+        {
+          "modelType": "SubmodelElementCollection",
+          "idShort": "EndOfLifeInformation",
+          "value": []
+        }
+      ]
+    }
+  ],
+  "conceptDescriptions": []
+}

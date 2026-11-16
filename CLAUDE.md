@@ -52,7 +52,7 @@ Zielkonflikt zwischen zwei verbindlichen Zielen: vor einer Grundsatzabweichung O
 | `/products/:productId/supplier` | Eigener Beitrag, Nachweise, Status, Transport | `pages/03_ZULIEFERER.md`, `assets/04_zulieferer.png` |
 | `/products/:productId/footprint` | Corporate Scopes, CCF/PCF, Daten-Röntgenblick, Herkunft | `pages/04_CO2_SCOPES_DATENFLUSS.md`, `assets/05_co2_scopes.png` |
 | `/products/:productId/aftersales` | Erkennen, Handeln, Weiterentwickeln: Feedback, Service, Zirkularität | `pages/05_AFTERSALES.md`, `assets/06_aftersales.png` |
-| `/sources`, `/data-factory`, `/data-platforms`, `/use-cases` | Bereichsseiten der Sidebar (1. Quellsysteme: ERP, PDM, BMS, Excel, LCA, Design, Service; 2. Data Factory: Microsoft Fabric; 3. Data Platforms: Catena-X, Open DPP; 4. Use Cases 1–4). Eintrag nur per `?item=`, keine tieferen Routen. Derzeit Platzhalter „Inhalt in Vorbereitung“, keine erfundenen Inhalte. | – |
+| `/sources`, `/data-factory`, `/data-platforms`, `/use-cases` | Bereichsseiten der Sidebar (1. Quellsysteme: ERP, PDM, BMS, Excel, LCA, Design, Service; 2. Data Factory: Microsoft Fabric, Datastructure; 3. Data Platforms: Catena-X, Open DPP; 4. Use Cases 1–4). Eintrag nur per `?item=`, keine tieferen Routen. Ohne eigene Ansicht Platzhalter „Inhalt in Vorbereitung“, keine erfundenen Inhalte. **Datastructure** (`/data-factory?item=datastructure`): Overview der im Browser-Tab geladenen AAS-3.x-Teilmodelle (nur die sieben IDTA 02035) nach dem Übergabepaket „Battery AAS Demonstrator Dev Handoff“ (16.11.2026). Startet leer (alles „nicht verfügbar“); Laden per JSON-Datei (Status `imported`) oder „Beispiel laden“ (Referenzinstanz, `illustrative`). Ablage nur in `sessionStorage` (`lib/aas/session.ts`): übersteht Neuladen, wird beim Schließen des Tabs gelöscht, keine Server-Übertragung. Nicht das Produkt M3; keine Live-Anbindung. | Paket-Doku `docs/01_SCOPE_UX.md`, `docs/04_MAPPING_KPI.md` |
 
 Der Showroom ist ein Einstiegszustand, keine sechste Fachseite. Die Routen in `frontend/src/lib/pages.ts` (`PAGES` für Fachseiten, `AREAS` für die Sidebar) sind die einzige Quelle für Routen, Navigation und Verknüpfungen.
 
@@ -70,11 +70,11 @@ Der Showroom ist ein Einstiegszustand, keine sechste Fachseite. Die Routen in `f
 ```text
 frontend/src/
 ├─ app/            shell/AppShell + Sidebar, routes/AppRoutes, providers/DrawerProvider
-├─ features/       showroom, oem, customer, supplier, footprint, aftersales (je Page + Sektionen), areas (Sidebar-Bereichsseiten)
+├─ features/       showroom, oem, customer, supplier, footprint, aftersales (je Page + Sektionen), areas (Sidebar-Bereichsseiten), datastructure
 ├─ components/     ui/ (SectionCard, Tile, DataValue, Chain, Icon), charts/, drawers/EntityDrawer
-├─ content/        typisierte Beispieldaten je Seite (index.ts, builder.ts)
+├─ content/        typisierte Beispieldaten je Seite (index.ts, builder.ts); aas/ = AAS-Beispielinstanz, datastructure.ts = Abbildung ViewModel → DataField
 ├─ hooks/          useContent.ts (einzige Lesegrenze für Fachdaten)
-├─ lib/            pages.ts (Routen, Navigation), reine Utilities
+├─ lib/            pages.ts (Routen, Navigation), reine Utilities; aas/ = AAS-Adapter (aus dem Übergabepaket portiert) + IDTA-Katalog
 ├─ types/          content.ts (DataField, FieldStatus, Section)
 └─ styles/         tokens.css, base.css, pages.css, showroom.css
 ```
@@ -84,7 +84,7 @@ Struktur vor dem Anlegen neuer Ordner prüfen; keine leeren Gerüste für Phase 
 ## Datenarchitektur (Phase 1)
 
 ```ts
-type FieldStatus = 'illustrative' | 'unavailable' | 'live';
+type FieldStatus = 'illustrative' | 'imported' | 'unavailable' | 'live';
 interface DataField {
   key: string;            // stabiler semantischer Schlüssel, z. B. "product.nominalCapacity"
   label: string;
@@ -103,7 +103,7 @@ Phase 2: API + generierter TS-Client → ApiAdapter → useField/useSection → 
 
 - **Fachwerte stehen nie hartkodiert in Komponenten.** Sie werden nur über die Hooks gelesen (`useField(key)`, `useSection`). Statische Texte im JSX sind erlaubt, Beispielwerte und KPIs nicht. `0` ist kein „fehlt“.
 - Eine Feldidentität pro semantischem Schlüssel und Produktkontext; Produktname, Gewicht, PCF u. a. dürfen sich zwischen Seiten nicht unterscheiden. Einheiten und Feldbezeichnungen bleiben konsistent.
-- `illustrative` wird als „Illustrativ“ gekennzeichnet, `unavailable` als „nicht verfügbar“. **`live` kommt in Phase 1 nicht vor.** Phase 2 hebt die Markierung pro Feld auf, sobald es live gebunden ist.
+- `illustrative` wird als „Illustrativ“ gekennzeichnet, `imported` (vom Nutzer lokal geladen, ungeprüft; derzeit nur Datastructure) als „Importiert · ungeprüft“, `unavailable` als „nicht verfügbar“. **`live` kommt in Phase 1 nicht vor**, auch nicht für importierte Daten. Phase 2 hebt die Markierung pro Feld auf, sobald es live gebunden ist.
 - Darstellungskomponenten greifen nie direkt auf `content/*.ts` zu.
 - `FieldStatus`, fachlicher Prüfstatus (z. B. `complete`, `in_review`, `open`, `invalid`, `unknown`) und Berechtigung sind getrennte Konzepte.
 - Den Adapter in Phase 2 kompatibel um Lade-, Fehler-, Rechte-, Frische- und Herkunftszustände erweitern. Keine Abstraktion für eine noch nicht vorhandene API bauen.
@@ -141,7 +141,7 @@ Entscheidungsreihenfolge: Brauchen wir es? → Gibt es das schon? → Können wi
 
 Härtegrade: **BLOCKER** muss für die betroffene Änderung bestehen, sonst nicht „fertig“. **RELEASE** muss vor der Phase-1-Abnahme bestehen (im Alltag gezielter Smoke statt voller E2E-Suite). **BASELINE** misst und dokumentiert, ohne belastbare Baseline keinen erfundenen Grenzwert erzwingen.
 
-**Ist-Stand der Scripts:** `frontend/package.json` kennt nur `dev`, `build` (= `tsc --noEmit && vite build`), `typecheck` und `preview`. **Lint und Tests sind noch nicht eingerichtet.** Gates, die sie brauchen, gelten erst nach minimaler Einrichtung (ESLint; Vitest/Testing Library; Playwright für E2E). Fehlt ein Script, wird es minimal eingerichtet und das dokumentiert, mit Rückfrage bei neuen Dependencies. Nicht durchführbare Prüfungen werden als **NICHT GEPRÜFT** mit Grund gemeldet, nie stillschweigend als bestanden gezählt. Keine `--if-present`/`|| true` bei Pflichtgates. „Läuft im `npm run dev`“ ist kein Build-/Testnachweis.
+**Ist-Stand der Scripts:** `frontend/package.json` kennt `dev`, `build` (= `tsc --noEmit && vite build`), `typecheck`, `preview` und `test` (= `vitest run`, Vitest 3.2 als Dev-Dependency, ohne Testing Library/jsdom). **Lint ist noch nicht eingerichtet**, ebenso Komponenten- und E2E-Tests. Gates, die sie brauchen, gelten erst nach minimaler Einrichtung (ESLint; Testing Library; Playwright für E2E). Fehlt ein Script, wird es minimal eingerichtet und das dokumentiert, mit Rückfrage bei neuen Dependencies. Nicht durchführbare Prüfungen werden als **NICHT GEPRÜFT** mit Grund gemeldet, nie stillschweigend als bestanden gezählt. Keine `--if-present`/`|| true` bei Pflichtgates. „Läuft im `npm run dev`“ ist kein Build-/Testnachweis.
 
 | Gate | Härte | Regel | Wann |
 | --- | --- | --- | --- |
@@ -150,7 +150,7 @@ Härtegrade: **BLOCKER** muss für die betroffene Änderung bestehen, sonst nich
 | G2 | Blocker | Lint ohne Errors, keine ungenutzten Imports/Variablen/Dateien (sobald Lint eingerichtet ist). | jeder Codechange |
 | G3 | Blocker | Tests für betroffene Logik grün; neue Regeln und Fehlerfälle bekommen Tests (sobald Vitest eingerichtet ist). | Feld-/Hook-/State-/Routing-/Formatierungsänderung |
 | G4 | Blocker | Keine hartkodierten Fachwerte in Pages/Karten/Charts; Zugriff nur über `useField`/`useSection`. | Daten-/UI-Change |
-| G5 | Blocker | `illustrative` sichtbar, `unavailable` → „nicht verfügbar“, kein `live`; keine implizit echte Compliance-/PCF-/SoH-/Servicebehauptung. | Daten-/UI-Change |
+| G5 | Blocker | `illustrative` und `imported` sichtbar gekennzeichnet, `unavailable` → „nicht verfügbar“, kein `live`; keine implizit echte Compliance-/PCF-/SoH-/Servicebehauptung. | Daten-/UI-Change |
 | G6 | Blocker | Aktive Elemente per Maus **und** Tastatur bedienbar, sichtbarer Fokus; Drawer mit Escape, Fokus-Rückgabe und verständlicher Beschriftung; keine Klickattrappen. | interaktive UI |
 | G7 | Release | `/`, fünf Fachrouten und vier Bereichsrouten laden; eine Header- und eine Sidebar-Implementierung; Batterie → OEM; vier Gruppen „in Vorbereitung“; `productId` bleibt beim Perspektivenwechsel erhalten. | Routing/Shell, Release |
 | G8 | Release | Showroom bei `prefers-reduced-motion` und mobil (z. B. 390×844) ohne Parallax nutzbar und ohne unbenutzbare horizontale UI; Kontraste, Alt-Texte, Fokus geprüft. | Showroom, Release |
@@ -198,6 +198,7 @@ npm install
 npm run dev        # http://localhost:5173/
 npm run typecheck
 npm run build      # Typprüfung + Produktions-Build
+npm test           # Vitest (Logik-/Inhaltstests)
 ```
 
 Details zum Serverstart: `Orga/SERVER_STARTEN.md`.

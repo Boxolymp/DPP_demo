@@ -110,6 +110,7 @@ h3 { font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 8px;
 .badge--open { background: var(--open-soft); color: var(--open); border-color: #f6c5c8; }
 
 .dv--illustrative { text-decoration: underline dotted; text-decoration-color: #9fb0cf; text-underline-offset: 3px; }
+.dv--imported { text-decoration: underline dashed; text-decoration-color: var(--warn); text-underline-offset: 3px; }
 .dv--unavailable { color: var(--muted); font-style: italic; }
 
 .metrics { display: grid; gap: 10px; }

@@ -1,5 +1,8 @@
+import { useSyncExternalStore } from 'react';
 import { useParams } from 'react-router-dom';
 import { fieldRegistry, sectionRegistry } from '../content';
+import { datastructureRegistry, type AasRegistry } from '../content/datastructure';
+import { aasSession, MAX_IMPORT_BYTES, type ImportResult } from '../lib/aas/session';
 import type { DataField, Section } from '../types/content';
 
 export const DEFAULT_PRODUCT_ID = 'm3';
@@ -12,8 +15,13 @@ function warnMissing(kind: string, key: string) {
   console.warn(`Inhaltsschicht: ${kind} „${key}“ ist nicht definiert.`);
 }
 
-function lookupField(key: string): DataField {
-  const f = fieldRegistry.get(key);
+/** Datastructure-Felder hängen am Tab-Speicher der geladenen AAS-Teilmodelle; alle übrigen sind statisch. */
+function useAasRegistry(): AasRegistry {
+  return datastructureRegistry(useSyncExternalStore(aasSession.subscribe, aasSession.getSnapshot));
+}
+
+function lookupField(key: string, aas: AasRegistry): DataField {
+  const f = fieldRegistry.get(key) ?? aas.fields.get(key);
   if (f) return f;
   warnMissing('Feld', key);
   return {
@@ -26,15 +34,17 @@ function lookupField(key: string): DataField {
 
 /** Einziger Zugriffspunkt auf Feldwerte. In Phase 2 wird hier die API angebunden. */
 export function useField(key: string): DataField {
-  return lookupField(key);
+  return lookupField(key, useAasRegistry());
 }
 
 export function useFields(keys: string[]): DataField[] {
-  return keys.map(lookupField);
+  const aas = useAasRegistry();
+  return keys.map((k) => lookupField(k, aas));
 }
 
 export function useSection(id: string): Section {
-  const s = sectionRegistry.get(id);
+  const aas = useAasRegistry();
+  const s = sectionRegistry.get(id) ?? aas.sections.get(id);
   if (s) return s;
   warnMissing('Sektion', id);
   return {
@@ -48,4 +58,28 @@ export function useSection(id: string): Section {
 
 export function useProductId(): string {
   return useParams().productId ?? DEFAULT_PRODUCT_ID;
+}
+
+async function importAasFiles(files: File[]): Promise<ImportResult[]> {
+  const results: ImportResult[] = [];
+  for (const file of files) {
+    if (file.size > MAX_IMPORT_BYTES) {
+      results.push({ fileName: file.name, accepted: [], rejected: [], shellLoaded: false, stored: true, error: 'Datei ist zu groß (maximal 2 MB).' });
+      continue;
+    }
+    results.push(aasSession.importText(await file.text(), file.name));
+  }
+  return results;
+}
+
+/** Beispielinstanz aus dem Übergabepaket; erst bei Bedarf geladen und nur für diesen Tab übernommen. */
+async function loadAasExample(): Promise<ImportResult> {
+  const example = await import('../content/aas/idta-inspired-partial-aas.json');
+  return aasSession.importEnvironment(example.default, 'Beispielinstanz (Übergabepaket)', 'example');
+}
+
+/** Geladene AAS-Teilmodelle dieses Tabs und die Aktionen dazu (Data Factory → Datastructure). */
+export function useAasSession() {
+  const state = useSyncExternalStore(aasSession.subscribe, aasSession.getSnapshot);
+  return { entries: state.entries, shell: state.shell, importFiles: importAasFiles, loadExample: loadAasExample, clear: aasSession.clear };
 }

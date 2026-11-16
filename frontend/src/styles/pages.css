@@ -403,6 +403,23 @@
 .area-select__item.active { background: var(--blue-soft); border-color: transparent; color: var(--blue); font-weight: 600; }
 .area-placeholder { max-width: 720px; }
 
+/* Data Factory → Datastructure (AAS-Referenzinstanz) */
+.ds-notice { padding: 12px 16px; border-radius: var(--radius-sm); background: var(--warn-soft); border: 1px solid #f3dcae; font-size: 14px; }
+.ds-notice__id { display: inline-block; color: var(--muted); overflow-wrap: anywhere; }
+.ds-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+.ds-coverage { display: flex; flex-direction: column; gap: 10px; }
+.ds-import__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ds-import__file { cursor: pointer; }
+.ds-import__file:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
+.ds-import__file.is-busy { opacity: 0.6; cursor: progress; }
+.ds-import .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ds-import__results, .ds-import__loaded { display: flex; flex-direction: column; gap: 6px; }
+.ds-import__rejected { margin-top: 4px; padding-left: 16px; list-style: disc; color: var(--muted); }
+.ds-import__error { color: var(--open); }
+.ds-import__loaded li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.ds-import__loaded li:last-child { border-bottom: 0; }
+.ds-import__loaded span { overflow-wrap: anywhere; }
+
 /* Responsive: nach Breite des Inhaltsbereichs (Container `main`), nicht des Fensters. */
 @container main (max-width: 1500px) {
   .dpp-cat__foot { grid-template-columns: auto minmax(0, 1fr); }
@@ -431,6 +448,7 @@
   .usecases { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @container main (max-width: 900px) {
+  .ds-grid { grid-template-columns: 1fr; }
   .grid-tiles--7 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lifecycle { flex-wrap: wrap; justify-content: center; }
   .oem-hero { justify-content: flex-start; }

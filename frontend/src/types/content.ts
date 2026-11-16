@@ -1,8 +1,11 @@
 import type { IconName } from '../components/ui/Icon';
 import type { PageId } from '../lib/pages';
 
-/** Status eines Datenfelds. `live` kommt erst mit der Datenanbindung (Phase 2). */
-export type FieldStatus = 'illustrative' | 'unavailable' | 'live';
+/**
+ * Status eines Datenfelds. `imported`: vom Nutzer lokal geladen (z. B. AAS-Teilmodell), ungeprüft.
+ * `live` kommt erst mit der Datenanbindung (Phase 2).
+ */
+export type FieldStatus = 'illustrative' | 'imported' | 'unavailable' | 'live';
 
 /** Farbton für Statusanzeigen (Badges, Fortschrittsbalken). */
 export type Tone = 'ok' | 'warn' | 'open' | 'neutral';

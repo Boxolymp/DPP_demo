@@ -146,7 +146,7 @@ export function EntityDrawer() {
           {target.type === 'section' ? <SectionBody id={target.id} /> : <FieldBody fieldKey={target.key} />}
         </div>
         <p className="drawer__note">
-          Demonstrator: Werte sind illustrativ. Die Datenanbindung folgt in Phase 2.
+          Demonstrator: Werte sind illustrativ oder stammen aus einem lokalen, ungeprüften Import. Die Datenanbindung folgt in Phase 2.
         </p>
       </aside>
     </div>

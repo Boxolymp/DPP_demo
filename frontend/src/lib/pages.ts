@@ -47,7 +47,15 @@ export const AREAS = [
       { id: 'service', label: 'Service' },
     ],
   },
-  { id: 'data-factory', label: 'Data Factory', icon: 'factory', items: [{ id: 'fabric', label: 'Microsoft Fabric' }] },
+  {
+    id: 'data-factory',
+    label: 'Data Factory',
+    icon: 'factory',
+    items: [
+      { id: 'fabric', label: 'Microsoft Fabric' },
+      { id: 'datastructure', label: 'Datastructure' },
+    ],
+  },
   {
     id: 'data-platforms',
     label: 'Data Platforms',

@@ -4,12 +4,14 @@ import { Icon, type IconName } from './Icon';
 
 export const STATUS_LABEL: Record<FieldStatus, string> = {
   illustrative: 'Illustrativ',
+  imported: 'Importiert · ungeprüft',
   unavailable: 'Nicht verfügbar',
   live: 'Live',
 };
 
 export const STATUS_TONE: Record<FieldStatus, Tone> = {
   illustrative: 'neutral',
+  imported: 'warn',
   unavailable: 'open',
   live: 'ok',
 };
@@ -19,13 +21,18 @@ export function formatValue(f: DataField, withUnit = true): string {
   return withUnit && f.unit ? `${f.value} ${f.unit}` : String(f.value);
 }
 
-/** Zeigt den Wert eines Felds; illustrative Werte sind gestrichelt unterstrichen. */
+const STATUS_TITLE: Partial<Record<FieldStatus, string>> = {
+  illustrative: 'Illustrativer Beispielwert, noch nicht aus einer Datenquelle',
+  imported: 'Aus lokalem Import, nicht geprüft',
+};
+
+/** Zeigt den Wert eines Felds; illustrative Werte sind gepunktet, importierte gestrichelt unterstrichen. */
 export function DataValue({ fieldKey, withUnit = true }: { fieldKey: string; withUnit?: boolean }) {
   const f = useField(fieldKey);
   return (
     <span
       className={`dv dv--${f.status}`}
-      title={f.status === 'illustrative' ? 'Illustrativer Beispielwert, noch nicht aus einer Datenquelle' : undefined}
+      title={STATUS_TITLE[f.status]}
     >
       {formatValue(f, withUnit)}
     </span>
