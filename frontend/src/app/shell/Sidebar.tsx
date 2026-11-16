@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Icon } from '../../components/ui/Icon';
-import { AREAS, AREA_ITEM_PARAM, areaPath } from '../../lib/pages';
+import { AREAS, AREA_ITEM_PARAM, areaPath, type AreaItem } from '../../lib/pages';
 
 /**
  * Dauerhaft sichtbare Bereichsnavigation im Stil der Header-Umschalter.
@@ -48,17 +48,28 @@ export function Sidebar() {
                   </span>
                 </button>
                 <ul id={listId} className="sidebar__items" hidden={!isOpen}>
-                  {area.items.map((item) => {
+                  {(area.items as readonly AreaItem[]).map((item) => {
                     const active = area.id === current && selected === item.id;
                     return (
                       <li key={item.id}>
-                        <Link
-                          to={areaPath(area.id, item.id)}
-                          className={`switcher__item sidebar__item${active ? ' active' : ''}`}
-                          aria-current={active ? 'page' : undefined}
-                        >
-                          {item.label}
-                        </Link>
+                        {item.href ? (
+                          <a
+                            href={item.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="switcher__item sidebar__item"
+                          >
+                            {item.label}
+                          </a>
+                        ) : (
+                          <Link
+                            to={areaPath(area.id, item.id)}
+                            className={`switcher__item sidebar__item${active ? ' active' : ''}`}
+                            aria-current={active ? 'page' : undefined}
+                          >
+                            {item.label}
+                          </Link>
+                        )}
                       </li>
                     );
                   })}

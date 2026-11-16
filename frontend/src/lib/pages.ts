@@ -21,11 +21,18 @@ export type PageId = (typeof PAGES)[number]['id'];
 
 export const productPath = (productId: string, page: PageId) => `/products/${productId}/${page}`;
 
+/** `href` öffnet direkt eine externe Seite (neuer Tab) statt einer Bereichsansicht. */
+export interface AreaItem {
+  id: string;
+  label: string;
+  href?: string;
+}
+
 interface AreaDef {
   id: string;
   label: string;
   icon: IconName;
-  items: readonly { id: string; label: string }[];
+  items: readonly AreaItem[];
 }
 
 /**
@@ -52,7 +59,7 @@ export const AREAS = [
     label: 'Data Factory',
     icon: 'factory',
     items: [
-      { id: 'fabric', label: 'Microsoft Fabric' },
+      { id: 'fabric', label: 'Microsoft Fabric', href: 'https://spicy-acorn-f7a0401d1b-germanywestcentral.webapp.fabricapps.net/' },
       { id: 'datastructure', label: 'Datastructure' },
     ],
   },
