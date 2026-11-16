@@ -25,14 +25,14 @@ const PRODUCT_IDS = PRODUCT_GROUPS.flatMap((g) => (g.productId ? [g.productId] :
 function ProductShell() {
   const { productId = '' } = useParams();
   if (!PRODUCT_IDS.includes(productId)) return <Navigate to="/" replace />;
-  return <AppShell variant="product" />;
+  return <AppShell />;
 }
 
 export function AppRoutes() {
   return (
     <Suspense fallback={<p className="loading" role="status">Wird geladen …</p>}>
       <Routes>
-        <Route element={<AppShell variant="plain" />}>
+        <Route element={<AppShell />}>
           <Route path="/" element={<ShowroomPage />} />
           {AREAS.map(({ id }) => (
             <Route key={id} path={id} element={<AreaPage areaId={id} />} />

@@ -17,10 +17,10 @@ function Logo() {
 }
 
 function GlobalHeader({
-  inProduct,
+  showNav,
   sidebarToggle,
 }: {
-  inProduct: boolean;
+  showNav: boolean;
   sidebarToggle?: { collapsed: boolean; onToggle: () => void };
 }) {
   const productId = useProductId();
@@ -42,7 +42,7 @@ function GlobalHeader({
         <Logo />
         <span className="topbar__title">Digital Product Passport Demonstrator</span>
       </div>
-      {inProduct ? (
+      {showNav ? (
         <div className="topbar__nav">
           <nav className="switcher" aria-label="Showroom">
             <NavLink to="/" end className="switcher__item">
@@ -74,13 +74,15 @@ function GlobalHeader({
   );
 }
 
-/** `plain`: Showroom und Bereichsseiten, Header nur mit Logo und Titel. `product`: Fachseiten mit Umschaltern. */
 const SIDEBAR_COLLAPSED_KEY = 'dpp-demo.sidebar-collapsed';
 
-export function AppShell({ variant }: { variant: 'plain' | 'product' }) {
+/**
+ * Gemeinsame Hülle für alle Routen. Außerhalb des Showrooms (`/`) zeigt der Header die vollen
+ * Umschalter und die Sidebar erscheint; im Showroom nur Logo und Titel.
+ */
+export function AppShell() {
   const { pathname } = useLocation();
-  const inProduct = variant === 'product';
-  // Sidebar erst ab Auswahl einer Produktgruppe, nicht im Showroom.
+  // Header-Optionen und Sidebar erst ab Auswahl einer Produktgruppe, nicht im Showroom.
   const sidebarAvailable = pathname !== '/';
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -105,7 +107,7 @@ export function AppShell({ variant }: { variant: 'plain' | 'product' }) {
       <div className={`shell${showSidebar ? '' : ' shell--no-sidebar'}`}>
         <a href="#main" className="skip-link">Zum Inhalt springen</a>
         <GlobalHeader
-          inProduct={inProduct}
+          showNav={sidebarAvailable}
           sidebarToggle={sidebarAvailable ? { collapsed, onToggle: toggleSidebar } : undefined}
         />
         {showSidebar && <Sidebar />}
