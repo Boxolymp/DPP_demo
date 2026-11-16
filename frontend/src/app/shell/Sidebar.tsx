@@ -26,7 +26,7 @@ export function Sidebar() {
     });
 
   return (
-    <aside className="sidebar">
+    <aside id="sidebar" className="sidebar">
       <nav aria-label="Bereiche">
         <ul className="sidebar__groups">
           {AREAS.map((area) => {

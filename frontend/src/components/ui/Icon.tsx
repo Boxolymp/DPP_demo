@@ -30,6 +30,7 @@ const PATHS = {
   qr: ['M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4z', 'M14 14h3v3h-3zM19 14v2M14 19h3M19 19v1'],
   info: ['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z', 'M12 11v5M12 8h.01'],
   dots: ['M6 6h.01M12 6h.01M18 6h.01M6 12h.01M12 12h.01M18 12h.01M6 18h.01M12 18h.01M18 18h.01'],
+  sidebar: ['M4 5h16v14H4z', 'M9 5v14'],
 } as const;
 
 export type IconName = keyof typeof PATHS;

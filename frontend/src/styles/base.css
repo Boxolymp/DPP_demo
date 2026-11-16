@@ -29,6 +29,7 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
 /* Header über volle Breite, darunter Sidebar und Inhalt. Der Inhalt ist ein Size-Container,
    damit Seiten-Breakpoints sich nach dem verfügbaren Platz richten, nicht nach dem Fenster. */
 .shell { min-height: 100vh; display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); grid-template-rows: var(--topbar-h) 1fr; }
+.shell--no-sidebar { grid-template-columns: minmax(0, 1fr); }
 .shell__main { min-width: 0; container: main / inline-size; }
 
 .topbar {
@@ -37,6 +38,9 @@ code { font-size: 12px; background: var(--surface-2); padding: 1px 5px; border-r
   position: sticky; top: 0; z-index: 20; grid-column: 1 / -1;
 }
 .topbar__left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.topbar__sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--muted); flex: none; }
+.topbar__sidebar-toggle:hover { background: var(--blue-soft); color: var(--blue); border-color: #c4d3f5; }
+.topbar__sidebar-toggle[aria-expanded='true'] { color: var(--blue); border-color: #c4d3f5; }
 .topbar__title { color: var(--muted); font-size: 14px; padding-left: 14px; border-left: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .topbar__right { display: flex; justify-content: flex-end; }
 .logo { display: inline-flex; align-items: center; }
