@@ -10,7 +10,10 @@ const ITEM_VIEWS: Partial<Record<string, LazyExoticComponent<ComponentType>>> = 
   ),
 };
 
-/** Bereichsseite der Sidebar. Ohne eigene Ansicht bewusst nur Platzhalter, damit keine Inhalte erfunden werden. */
+/**
+ * Bereichsseite der Sidebar. Bereiche mit `embedUrl` zeigen ausschließlich die eingebettete Anwendung;
+ * sonst ohne eigene Ansicht bewusst nur Platzhalter, damit keine Inhalte erfunden werden.
+ */
 export function AreaPage({ areaId }: { areaId: Area['id'] }) {
   const area = AREAS.find((a) => a.id === areaId)!;
   const number = AREAS.indexOf(area) + 1;
@@ -18,6 +21,11 @@ export function AreaPage({ areaId }: { areaId: Area['id'] }) {
   const items: readonly AreaItem[] = area.items;
   const item = items.find((i) => i.id === params.get(AREA_ITEM_PARAM));
   const View = item ? ITEM_VIEWS[`${area.id}/${item.id}`] : undefined;
+  const embedUrl = 'embedUrl' in area ? area.embedUrl : undefined;
+
+  if (embedUrl) {
+    return <iframe className="area-embed" src={embedUrl} title={`${area.label}: Dashboard`} />;
+  }
 
   return (
     <div className="page">

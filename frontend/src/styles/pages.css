@@ -402,6 +402,8 @@
 .area-select__item:hover { border-color: #c4d3f5; color: var(--text); }
 .area-select__item.active { background: var(--blue-soft); border-color: transparent; color: var(--blue); font-weight: 600; }
 .area-placeholder { max-width: 720px; }
+/* Eingebettete Anwendung füllt den Inhaltsbereich zwischen Header und Sidebar vollständig. */
+.area-embed { display: block; width: 100%; height: calc(100vh - var(--topbar-h)); border: 0; }
 
 /* Data Factory → Datastructure (AAS-Referenzinstanz) */
 .ds-notice { padding: 12px 16px; border-radius: var(--radius-sm); background: var(--warn-soft); border: 1px solid #f3dcae; font-size: 14px; }
