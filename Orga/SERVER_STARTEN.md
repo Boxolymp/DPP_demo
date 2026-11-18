@@ -25,6 +25,12 @@ cd frontend
 npm run dev
 ```
 
+## Dashboard „Quellsysteme“
+
+Der Bereich *Quellsysteme* bettet ein lokales Dashboard ein. Es muss auf demselben Rechner unter `http://127.0.0.1:8080/dashboard` laufen.
+Der Vite-Server (`npm run dev` und `npm run preview`) leitet `/dashboard` dorthin weiter (`frontend/vite.config.ts`). So liegt das Dashboard auf demselben Origin wie die Demo, und seine CSP `frame-ancestors 'self'` erlaubt die Einbettung.
+Läuft das Dashboard nicht, bleibt die Fläche leer bzw. zeigt einen Proxy-Fehler.
+
 ## Server beenden
 
 Im Terminal, in dem der Server läuft: `Ctrl + C`.

@@ -33,7 +33,7 @@ interface AreaDef {
   label: string;
   icon: IconName;
   items: readonly AreaItem[];
-  /** Externe Anwendung, die statt des Seiteninhalts eingebettet wird (für alle Einträge des Bereichs). */
+  /** Eingebettete Anwendung statt des Seiteninhalts (für alle Einträge des Bereichs); Same-Origin-Pfad, per Proxy in `vite.config.ts`. */
   embedUrl?: string;
 }
 
@@ -46,7 +46,7 @@ export const AREAS = [
     id: 'sources',
     label: 'Quellsysteme',
     icon: 'database',
-    embedUrl: 'http://127.0.0.1:8080/dashboard',
+    embedUrl: '/dashboard',
     items: [
       { id: 'erp', label: 'ERP' },
       { id: 'pdm', label: 'PDM' },
