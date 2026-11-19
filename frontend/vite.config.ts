@@ -1,17 +1,13 @@
-import { defineConfig, type ProxyOptions } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { dashboardProxy } from './dashboard-proxy.js';
 
 /**
- * Lokales Dashboard (Quellsysteme) über denselben Origin wie die Demo ausliefern: Der Dashboard-Server
- * erlaubt per CSP `frame-ancestors 'self'` nur Same-Origin-Einbettung. `autoRewrite` hält Weiterleitungen
- * des Dashboards auf dem Demo-Origin, statt direkt auf Port 8080 zu springen.
+ * Host 127.0.0.1, damit Demo und Dashboard-Proxy (127.0.0.1:8081) dieselbe Site sind: Sonst sendet der
+ * Browser im eingebetteten Dashboard das Login-Cookie nicht mit.
  */
-const proxy: Record<string, ProxyOptions> = {
-  '/dashboard': { target: 'http://127.0.0.1:8080', changeOrigin: true, autoRewrite: true, ws: true },
-};
-
 export default defineConfig({
-  plugins: [react()],
-  server: { proxy },
-  preview: { proxy },
+  plugins: [react(), dashboardProxy()],
+  server: { host: '127.0.0.1' },
+  preview: { host: '127.0.0.1' },
 });

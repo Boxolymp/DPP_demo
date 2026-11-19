@@ -195,7 +195,7 @@ README/Komponenten-Doku nur bei tatsächlicher Schnittstellenänderung aktualisi
 ```bash
 cd frontend
 npm install
-npm run dev        # http://localhost:5173/
+npm run dev        # http://127.0.0.1:5173/ (+ Dashboard-Proxy auf :8081)
 npm run typecheck
 npm run build      # Typprüfung + Produktions-Build
 npm test           # Vitest (Logik-/Inhaltstests)
