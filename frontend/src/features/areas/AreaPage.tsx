@@ -1,7 +1,7 @@
 import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PageHero } from '../../components/ui/SectionCard';
-import { AREAS, AREA_ITEM_PARAM, areaPath, type Area, type AreaItem } from '../../lib/pages';
+import { AREAS, AREA_ITEM_PARAM, areaPath, externalLinkProps, type Area, type AreaItem } from '../../lib/pages';
 
 /** Einträge mit eigener Ansicht (`bereich/eintrag`); alle übrigen zeigen den Platzhalter. */
 const ITEM_VIEWS: Partial<Record<string, LazyExoticComponent<ComponentType>>> = {
@@ -11,7 +11,7 @@ const ITEM_VIEWS: Partial<Record<string, LazyExoticComponent<ComponentType>>> = 
 };
 
 /**
- * Bereichsseite der Sidebar. Bereiche mit `embedUrl` zeigen ausschließlich die eingebettete Anwendung;
+ * Bereichsseite der Sidebar. Einträge bzw. Bereiche mit `embedUrl` zeigen ausschließlich die eingebettete Anwendung;
  * sonst ohne eigene Ansicht bewusst nur Platzhalter, damit keine Inhalte erfunden werden.
  */
 export function AreaPage({ areaId }: { areaId: Area['id'] }) {
@@ -21,10 +21,10 @@ export function AreaPage({ areaId }: { areaId: Area['id'] }) {
   const items: readonly AreaItem[] = area.items;
   const item = items.find((i) => i.id === params.get(AREA_ITEM_PARAM));
   const View = item ? ITEM_VIEWS[`${area.id}/${item.id}`] : undefined;
-  const embedUrl = 'embedUrl' in area ? area.embedUrl : undefined;
+  const embedUrl = item?.embedUrl ?? ('embedUrl' in area ? area.embedUrl : undefined);
 
   if (embedUrl) {
-    return <iframe className="area-embed" src={embedUrl} title={`${area.label}: Dashboard`} />;
+    return <iframe className="area-embed" src={embedUrl} title={`${area.label}: ${item?.label ?? 'Dashboard'}`} />;
   }
 
   return (
@@ -34,15 +34,10 @@ export function AreaPage({ areaId }: { areaId: Area['id'] }) {
         subtitle={item ? `Ausgewählt: ${item.label}` : 'Bitte einen Eintrag auswählen.'}
       />
       <nav className="area-select" aria-label={`${area.label}: Auswahl`}>
-        {items.map((i) =>
-          i.href ? (
-            <a
-              key={i.id}
-              href={i.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="area-select__item"
-            >
+        {items.map((i) => {
+          const external = externalLinkProps(i);
+          return external ? (
+            <a key={i.id} {...external} className="area-select__item">
               {i.label}
             </a>
           ) : (
@@ -54,8 +49,8 @@ export function AreaPage({ areaId }: { areaId: Area['id'] }) {
             >
               {i.label}
             </Link>
-          ),
-        )}
+          );
+        })}
       </nav>
       {View ? (
         <Suspense fallback={<p className="loading" role="status">Wird geladen …</p>}>

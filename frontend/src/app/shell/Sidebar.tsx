@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { Icon } from '../../components/ui/Icon';
-import { AREAS, AREA_ITEM_PARAM, areaPath, type AreaItem } from '../../lib/pages';
+import { AREAS, AREA_ITEM_PARAM, areaPath, externalLinkProps, type AreaItem } from '../../lib/pages';
 
 /**
  * Dauerhaft sichtbare Bereichsnavigation im Stil der Header-Umschalter.
@@ -50,15 +50,11 @@ export function Sidebar() {
                 <ul id={listId} className="sidebar__items" hidden={!isOpen}>
                   {(area.items as readonly AreaItem[]).map((item) => {
                     const active = area.id === current && selected === item.id;
+                    const external = externalLinkProps(item);
                     return (
                       <li key={item.id}>
-                        {item.href ? (
-                          <a
-                            href={item.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="switcher__item sidebar__item"
-                          >
+                        {external ? (
+                          <a {...external} className="switcher__item sidebar__item">
                             {item.label}
                           </a>
                         ) : (

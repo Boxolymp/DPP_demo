@@ -21,11 +21,20 @@ export type PageId = (typeof PAGES)[number]['id'];
 
 export const productPath = (productId: string, page: PageId) => `/products/${productId}/${page}`;
 
-/** `href` öffnet direkt eine externe Seite (neuer Tab) statt einer Bereichsansicht. */
+/**
+ * `href` öffnet direkt eine externe Seite (neuer Tab) statt einer Bereichsansicht;
+ * `embedUrl` bettet eine Anwendung als Bereichsansicht ein (zwischen Header und Sidebar).
+ */
 export interface AreaItem {
   id: string;
   label: string;
   href?: string;
+  embedUrl?: string;
+}
+
+/** Link-Attribute für Einträge mit externer Seite (`undefined` bei interner Bereichsansicht). */
+export function externalLinkProps(item: AreaItem) {
+  return item.href ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' } : undefined;
 }
 
 interface AreaDef {
@@ -33,7 +42,7 @@ interface AreaDef {
   label: string;
   icon: IconName;
   items: readonly AreaItem[];
-  /** Eingebettete Anwendung statt des Seiteninhalts (für alle Einträge des Bereichs); lokaler Einbettungs-Proxy aus `dashboard-proxy.js`. */
+  /** Eingebettete Anwendung für alle Einträge des Bereichs (`AreaItem.embedUrl` hat Vorrang); lokaler Einbettungs-Proxy aus `dashboard-proxy.js`. */
   embedUrl?: string;
 }
 
@@ -72,7 +81,7 @@ export const AREAS = [
     icon: 'globe',
     items: [
       { id: 'catena-x', label: 'Catena-X' },
-      { id: 'open-dpp', label: 'Open DPP' },
+      { id: 'open-dpp', label: 'Open DPP', href: 'https://cloud.open-dpp.de' },
     ],
   },
   {
